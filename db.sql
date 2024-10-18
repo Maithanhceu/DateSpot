@@ -31,8 +31,7 @@ CREATE TABLE public.events (
     eventtype character varying(255),
     eventdescription text,
     eventtitle character varying(255),
-    eventphoto bytea,
-    eventauthor boolean
+    eventphoto character varying(255)
 );
 
 
@@ -73,8 +72,7 @@ CREATE TABLE public.userevents (
     eventtype character varying(255),
     eventdescription text,
     eventtitle character varying(255),
-    eventphoto bytea,
-    eventauthor boolean
+    eventphoto character varying(255)
 );
 
 
@@ -165,7 +163,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN userid SET DEFAULT nextval('public.us
 -- Data for Name: events; Type: TABLE DATA; Schema: public; Owner: thanhmai
 --
 
-COPY public.events (eventid, date, location, eventtype, eventdescription, eventtitle, eventphoto, eventauthor) FROM stdin;
+COPY public.events (eventid, date, location, eventtype, eventdescription, eventtitle, eventphoto) FROM stdin;
 1	2024-11-13	Brooklyn	Comedy Show	A fun comedy show	Live, Laugh, Love	\\x2f50686f746f732f436f6d6564795f73686f772e6a7067	\N
 \.
 
