@@ -4,11 +4,13 @@ import express from 'express';
 import pkg from 'pg';
 import cors from 'cors';
 import axios from 'axios';
-
+import fs from 'fs';
 import multer from 'multer';
 import fetch from 'node-fetch';
 import path from 'path';
-import vision from '@google-cloud/vision';
+import { fileURLToPath } from 'url';
+import { ImageAnnotatorClient } from '@google-cloud/vision';
+
 
 const { Pool } = pkg;
 const PORT = 1113;
@@ -27,38 +29,79 @@ const pool = new Pool({
 // -------------------------------------------------------------------------------------------------
 // A POST Request to Google Vision 
 
-app.post('/googlevision', async (request, response) => {
-    try {
-        const apiResponse = await fetch('https://vision.googleapis.com/v1/images:annotate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.GOOGLE_API_KEY}`
-            },
-            body: JSON.stringify({
-                requests: [
-                    {
-                        image: {
-                            content: "/Photos/Comedy_show.jpg"
-                        },
-                        features: [
-                            {
-                                type: "LABEL_DETECTION",
-                                maxResults: 1
-                            }
-                        ]
-                    }
-                ]
-            })
-        });
+const __dirname = path.resolve(); // Get the current directory path
 
-        const data = await apiResponse.json();
-        response.status(200).json(data);
-    } catch (error) {
-        console.error('Error:', error);
-        response.status(500).json({ error: 'An error occurred while processing your request.' });
+// Create the Photos directory if it doesn't exist
+const photosPath = path.join(__dirname, 'Photos');
+if (!fs.existsSync(photosPath)) {
+    fs.mkdirSync(photosPath);
+}
+
+// Multer storage configuration
+const storage = multer.diskStorage({
+    destination: (request, file, cb) => {
+        cb(null, photosPath); 
+    },
+    filename: (request, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); 
     }
 });
+
+const upload = multer({ storage: storage });
+
+const client = new ImageAnnotatorClient({
+    keyFilename: path.join(__dirname, 'autopopulate.json'), 
+});
+
+// Endpoint to handle file upload and Google Vision API analysis
+app.post('/upload', upload.single('file'), async (request, response) => {
+    if (!request.file) {
+        return response.status(400).json({ error: 'No file uploaded.' });
+    }
+
+    const filePath = path.join(photosPath, request.file.filename); 
+    console.log('File saved at:', filePath);
+
+    try {
+        // Use the Vision API to perform label detection on the uploaded image
+        const [result] = await client.labelDetection(filePath);
+        
+        // Log the entire result for debugging
+        console.log(JSON.stringify(result, null, 2));
+        
+        const labels = result.labelAnnotations; // Access the label annotations
+    
+        // Check if any labels were returned
+        if (labels && labels.length > 0) {
+            // Extract descriptions and scores
+            const labelsList = labels.map(label => ({
+                description: label.description,
+            }));
+            
+            // Create a JSON object with the file name and labels
+            const jsonData = {
+                fileName: request.file.filename,
+                labels: labelsList,
+            };
+            
+            // Write the JSON data to a file
+            const jsonFilePath = path.join(photosPath, `${request.file.filename}.json`);
+            fs.writeFileSync(jsonFilePath, JSON.stringify(jsonData, null, 2));
+    
+            response.status(200).json({ message: 'File uploaded and analyzed successfully!', labels: labelsList });
+        } else {
+            response.status(200).json({ message: 'File uploaded, but no labels were detected.', labels: [] });
+        }
+    } catch (error) {
+        console.error('Error analyzing image with Google Vision:', error);
+        response.status(500).json({ error: 'Error analyzing the image.' });
+    }
+});
+
+
+
+// -------------------------------------------------------------------------------------------------
+
 // -------------------------------------------------------------------------------------------------
 //API GET to the NewsAPI
 app.get('/news/romance', async (requst, response) => {
