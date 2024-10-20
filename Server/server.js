@@ -6,11 +6,9 @@ import cors from 'cors';
 import axios from 'axios';
 import fs from 'fs';
 import multer from 'multer';
-import fetch from 'node-fetch';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import OpenAI from 'openai';
 import { ImageAnnotatorClient } from '@google-cloud/vision';
-
 
 const { Pool } = pkg;
 const PORT = 1113;
@@ -27,10 +25,51 @@ const pool = new Pool({
 });
 
 // -------------------------------------------------------------------------------------------------
+//OPEN AI end-point 
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY, 
+});
+
+app.get('/altText', async (request, response) => {
+    const { eventId } = request.body; 
+
+    if (!eventId) {
+        return response.status(400).json({ error: 'Event ID is required.' });
+    }
+
+    try {
+        const result = await pool.query('SELECT eventDescription FROM EVENTS WHERE eventId = $1', [eventId]);
+
+        if (result.rows.length === 0) {
+            return response.status(404).json({ error: 'No event found with the given ID.' });
+        }
+
+        const description = result.rows[0].eventdescription; 
+        // console.log(description) debudgging persons 
+        //OPEN AI IMPLEMENTATION
+        const completion = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            messages: [
+                { role: "system", content: "You are a helpful assistant." },
+                {
+                    role: "user",
+                    content: `Create a one-line description with the following description terms: ${description} please try to make it as clincial so limit the flowery language`,
+                },
+            ],
+        });
+
+        const altText = completion.choices[0].message.content; 
+        response.status(200).json({ altText }); 
+    } catch (error) {
+        console.error('Error retrieving alt text:', error);
+        response.status(500).json({ error: 'Error retrieving alt text.' });
+    }
+});
+
+// -------------------------------------------------------------------------------------------------
 // A POST Request to Google Vision 
 
 const __dirname = path.resolve(); // Get the current directory path
-
 // Create the Photos directory if it doesn't exist
 const photosPath = path.join(__dirname, 'Photos');
 if (!fs.existsSync(photosPath)) {
@@ -46,65 +85,71 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + path.extname(file.originalname)); 
     }
 });
-
 const upload = multer({ storage: storage });
-
-const client = new ImageAnnotatorClient({
+const visionClient = new ImageAnnotatorClient({
     keyFilename: path.join(__dirname, 'autopopulate.json'), 
 });
 
-// Endpoint to handle file upload and Google Vision API analysis
-app.post('/upload', upload.single('file'), async (request, response) => {
-    if (!request.file) {
-        return response.status(400).json({ error: 'No file uploaded.' });
-    }
-
-    const filePath = path.join(photosPath, request.file.filename); 
+//POST For NEW EVENTS 
+app.post('/newUser', upload.single('file'), async (request, response) => {
+    const filePath = path.join(photosPath, request.file.filename);
     console.log('File saved at:', filePath);
 
     try {
-        // Use the Vision API to perform label detection on the uploaded image
-        const [result] = await client.labelDetection(filePath);
-        
-        // Log the entire result for debugging
-        console.log(JSON.stringify(result, null, 2));
-        
-        const labels = result.labelAnnotations; // Access the label annotations
-    
-        // Check if any labels were returned
+        // Analyze the uploaded image with Google Vision
+        const [visionResult] = await visionClient.labelDetection(filePath);
+        const labels = visionResult.labelAnnotations;
+
+        // Process the labels if they exist
         if (labels && labels.length > 0) {
-            // Extract descriptions and scores
             const labelsList = labels.map(label => ({
                 description: label.description,
             }));
-            
-            // Create a JSON object with the file name and labels
-            const jsonData = {
+
+            const labelsDescriptions = labelsList.map(label => label.description).join(', ');
+
+            // Create a JSON object with file name and labels
+            const jsonLabel = {
                 fileName: request.file.filename,
                 labels: labelsList,
             };
-            
-            // Write the JSON data to a file
+
+            // Save the JSON data to a file
             const jsonFilePath = path.join(photosPath, `${request.file.filename}.json`);
-            fs.writeFileSync(jsonFilePath, JSON.stringify(jsonData, null, 2));
-    
-            response.status(200).json({ message: 'File uploaded and analyzed successfully!', labels: labelsList });
+            fs.writeFileSync(jsonFilePath, JSON.stringify(jsonLabel, null, 2));
+
+            // Extract event details from the request body
+            const {date, location, eventType, eventDescription, eventTitle} = request.body;
+
+            // Validate required event details
+            if (!date || !location || !eventType || !eventDescription || !eventTitle) {
+                return response.status(400).json({ error: 'Please provide all necessary event details.' });
+            }
+
+            // Insert the new event into the database
+            const eventPhoto = `/${request.file.filename}`
+            const eventResult = await pool.query(
+                'INSERT INTO events (date, location, eventType, eventDescription, eventTitle, eventPhoto, eventAltText) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+                [date, location, eventType, eventDescription, eventTitle, eventPhoto, labelsDescriptions]
+            );
+
+            // Return the created event
+            return response.status(201).json(eventResult.rows[0]);
+
         } else {
-            response.status(200).json({ message: 'File uploaded, but no labels were detected.', labels: [] });
+            return response.status(200).json({
+                message: 'File uploaded, but no labels were detected.',
+                labels: [],
+            });
         }
     } catch (error) {
-        console.error('Error analyzing image with Google Vision:', error);
-        response.status(500).json({ error: 'Error analyzing the image.' });
+        console.error('Error processing upload:', error);
+        return response.status(500).json({ error: 'Error processing the upload.' });
     }
 });
-
-
-
-// -------------------------------------------------------------------------------------------------
-
 // -------------------------------------------------------------------------------------------------
 //API GET to the NewsAPI
-app.get('/news/romance', async (requst, response) => {
+app.get('/news/romance', async (request, response) => {
     const url = `https://newsapi.org/v2/everything?q=romance&apiKey=${process.env.NEWS_API_KEY}`;
 
     try {
@@ -129,26 +174,26 @@ app.get('/usersTable', async (request, response) => {
     }
 });
 
-app.post('/newUser', async (request, response) => {
-    const { username, password, firstname, lastname, email } = request.body;
+// app.post('/newUser', async (request, response) => {
+//     const { username, password, firstname, lastname, email } = request.body;
 
-    if (!username || !password || !firstname || !lastname || !email) {
-        return response.status(400).json({ error: "Please enter all the necessary information, thank you!" });
-    }
+//     if (!username || !password || !firstname || !lastname || !email) {
+//         return response.status(400).json({ error: "Please enter all the necessary information, thank you!" });
+//     }
 
-    try {
-        const result = await pool.query(
-            'INSERT INTO users (username, password, firstname, lastname, email) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [username, password, firstname, lastname, email]
-        );
+//     try {
+//         const result = await pool.query(
+//             'INSERT INTO users (username, password, firstname, lastname, email) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+//             [username, password, firstname, lastname, email]
+//         );
 
-        response.status(201).json(result.rows[0]);
+//         response.status(201).json(result.rows[0]);
 
-    } catch (error) {
-        console.error('Error executing query', error);
-        response.status(500).json({ error: 'Internal Server Error' });
-    }
-});
+//     } catch (error) {
+//         console.error('Error executing query', error);
+//         response.status(500).json({ error: 'Internal Server Error' });
+//     }
+// });
 
 app.put('/updateUser/:userId', async (request, response) => {
     const userId = request.params.userId;
