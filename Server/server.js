@@ -91,7 +91,7 @@ const visionClient = new ImageAnnotatorClient({
 });
 
 //POST For NEW EVENTS 
-app.post('/newUser', upload.single('file'), async (request, response) => {
+app.post('/newEvents', upload.single('file'), async (request, response) => {
     const filePath = path.join(photosPath, request.file.filename);
     console.log('File saved at:', filePath);
 
@@ -174,26 +174,26 @@ app.get('/usersTable', async (request, response) => {
     }
 });
 
-// app.post('/newUser', async (request, response) => {
-//     const { username, password, firstname, lastname, email } = request.body;
+app.post('/newUser', async (request, response) => {
+    const { username, password, firstname, lastname, email } = request.body;
 
-//     if (!username || !password || !firstname || !lastname || !email) {
-//         return response.status(400).json({ error: "Please enter all the necessary information, thank you!" });
-//     }
+    if (!username || !password || !firstname || !lastname || !email) {
+        return response.status(400).json({ error: "Please enter all the necessary information, thank you!" });
+    }
 
-//     try {
-//         const result = await pool.query(
-//             'INSERT INTO users (username, password, firstname, lastname, email) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-//             [username, password, firstname, lastname, email]
-//         );
+    try {
+        const result = await pool.query(
+            'INSERT INTO users (username, password, firstname, lastname, email) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [username, password, firstname, lastname, email]
+        );
 
-//         response.status(201).json(result.rows[0]);
+        response.status(201).json(result.rows[0]);
 
-//     } catch (error) {
-//         console.error('Error executing query', error);
-//         response.status(500).json({ error: 'Internal Server Error' });
-//     }
-// });
+    } catch (error) {
+        console.error('Error executing query', error);
+        response.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 app.put('/updateUser/:userId', async (request, response) => {
     const userId = request.params.userId;
@@ -246,27 +246,6 @@ app.get('/events', async (request, response) => {
     try {
         const result = await pool.query('SELECT * FROM events');
         response.json(result.rows);
-    } catch (error) {
-        console.error('Error executing query', error);
-        response.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-app.post('/addNewEvent', async (request, response) => {
-    const { date, location, eventType, eventDescription, eventTitle, eventPhoto } = request.body;
-
-    if (!date || !location || !eventType || !eventDescription || !eventTitle || !eventPhoto) {
-        return response.status(400).json({ error: "Please provide all necessary event details." });
-    }
-
-    try {
-        const result = await pool.query(
-            'INSERT INTO events (date, location, eventType, eventDescription, eventTitle, eventPhoto) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [date, location, eventType, eventDescription, eventTitle, eventPhoto]
-        );
-
-        response.status(201).json(result.rows[0]);
-
     } catch (error) {
         console.error('Error executing query', error);
         response.status(500).json({ error: 'Internal Server Error' });
