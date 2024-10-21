@@ -53,7 +53,7 @@ app.get('/altText', async (request, response) => {
                 { role: "system", content: "You are a helpful assistant." },
                 {
                     role: "user",
-                    content: `Create a one-line description with the following description terms: ${description} please try to make it as clincial so limit the flowery language`,
+                    content: `Create a one-line description with the following description terms: ${description} please try to make it as clinical a possible, so limit the flowery language`,
                 },
             ],
         });
