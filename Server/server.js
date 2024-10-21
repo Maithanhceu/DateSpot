@@ -153,13 +153,12 @@ app.get('/news/romance', async (request, response) => {
     const url = `https://newsapi.org/v2/everything?q=romance&apiKey=${process.env.NEWS_API_KEY}`;
 
     try {
-        const response = await axios.get(url);
-
-        // Send the articles back in the response
-        return response.json(response.data.articles);
+        const result = await axios.get(url);
+        const data = result.data.articles;
+        return response.json(data);
     } catch (error) {
         console.error('Error fetching news:', error);
-        return res.status(500).json({ error: 'Error fetching news from News API' });
+        return response.status(500).json({ error: 'Error fetching news from News API' });
     }
 });
 // -------------------------------------------------------------------------------------------------
