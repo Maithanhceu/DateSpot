@@ -32,7 +32,9 @@ CREATE TABLE public.events (
     eventtype character varying(255),
     eventdescription text NOT NULL,
     eventtitle character varying(255),
-    eventphoto character varying(255)
+    eventphoto character varying(255),
+    eventalttext character varying (255),
+    eventgroup character varying (255)
 );
 
 
