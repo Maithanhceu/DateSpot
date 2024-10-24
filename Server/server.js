@@ -30,8 +30,8 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-app.get('/altText', async (request, response) => {
-    const { eventId } = request.body;
+app.get('/altText/:eventId', async (request, response) => {
+    const { eventId } = request.params;
 
     if (!eventId) {
         return response.status(400).json({ error: 'Event ID is required.' });
@@ -94,7 +94,7 @@ const visionClient = new ImageAnnotatorClient({
 });
 
 //POST For NEW EVENTS 
-app.post('/newEvents', upload.single('file'), async (request, response) => {
+app.post('/uploadPhoto', upload.single('file'), async (request, response) => {
     const filePath = path.join(photosPath, request.file.filename);
     console.log('File saved at:', filePath);
 
@@ -121,19 +121,10 @@ app.post('/newEvents', upload.single('file'), async (request, response) => {
             const jsonFilePath = path.join(photosPath, `${request.file.filename}.json`);
             fs.writeFileSync(jsonFilePath, JSON.stringify(jsonLabel, null, 2));
 
-            // Extract event details from the request body
-            const { date, location, eventType, eventDescription, eventTitle } = request.body;
-
-            // Validate required event details
-            if (!date || !location || !eventType || !eventDescription || !eventTitle) {
-                return response.status(400).json({ error: 'Please provide all necessary event details.' });
-            }
-
-            // Insert the new event into the database
             const eventPhoto = `/${request.file.filename}`
             const eventResult = await pool.query(
-                'INSERT INTO events (date, location, eventType, eventDescription, eventTitle, eventPhoto, eventAltText) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-                [date, location, eventType, eventDescription, eventTitle, eventPhoto, labelsDescriptions]
+                'INSERT INTO events (eventPhoto, eventDescription) VALUES ($1, $2) RETURNING *',
+                [eventPhoto, labelsDescriptions]
             );
 
             // Return the created event
@@ -150,6 +141,34 @@ app.post('/newEvents', upload.single('file'), async (request, response) => {
         return response.status(500).json({ error: 'Error processing the upload.' });
     }
 });
+
+app.put('/editEvents/:creatorId/:eventId', async (request, response) => {
+    const creatorId = request.params.creatorId;
+    const eventId = request.params.eventId;
+    const { date, location, eventType, eventDescription, eventTitle, eventAltText } = request.body;
+
+    // Check if all fields are provided
+    if (!date || !location || !eventType || !eventDescription || !eventTitle || !eventAltText) {
+        return response.status(400).json({ error: "All fields are required." });
+    }
+
+    try {
+        const result = await pool.query(
+            'UPDATE events SET date = $1, location = $2, eventType = $3, eventDescription = $4, eventTitle = $5, eventAltText = $6 WHERE eventId = $7 AND creatorId = $8 RETURNING *',
+            [date, location, eventType, eventDescription, eventTitle, eventAltText, eventId, creatorId]
+        );
+
+        if (result.rowCount === 0) {
+            return response.status(404).json({ error: 'Event not found or you do not have permission to edit this event.' });
+        }
+
+        response.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error executing query', error);
+        response.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 // -------------------------------------------------------------------------------------------------
 //API GET to the NewsAPI
 app.get('/news/romance', async (request, response) => {
@@ -157,7 +176,7 @@ app.get('/news/romance', async (request, response) => {
 
     try {
         const result = await axios.get(url);
-        const data = result.data.articles;
+        const data = await result.data.articles;
         return response.json(data);
     } catch (error) {
         console.error('Error fetching news:', error);
