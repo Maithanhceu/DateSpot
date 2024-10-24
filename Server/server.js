@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-dotenv.config(); 
+dotenv.config();
 import express from 'express';
 import pkg from 'pg';
 import cors from 'cors';
@@ -14,7 +14,7 @@ const { Pool } = pkg;
 const PORT = 1113;
 
 const app = express();
-app.use(express.json()); 
+app.use(express.json());
 app.use(cors());
 
 const pool = new Pool({
@@ -27,11 +27,11 @@ const pool = new Pool({
 // -------------------------------------------------------------------------------------------------
 //OPEN AI end-point 
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY, 
+    apiKey: process.env.OPENAI_API_KEY,
 });
 
-app.get('/altText', async (request, response) => {
-    const { eventId } = request.body; 
+app.get('/altText/:eventId', async (request, response) => {
+    const { eventId } = request.params;
 
     if (!eventId) {
         return response.status(400).json({ error: 'Event ID is required.' });
@@ -44,13 +44,16 @@ app.get('/altText', async (request, response) => {
             return response.status(404).json({ error: 'No event found with the given ID.' });
         }
 
-        const description = result.rows[0].eventdescription; 
+        const description = result.rows[0].eventdescription;
         // console.log(description) debudgging persons 
         //OPEN AI IMPLEMENTATION
         const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [
-                { role: "system", content: "You are a helpful assistant." },
+                {
+                    role: "system",
+                    content: "You are a helpful assistant."
+                },
                 {
                     role: "user",
                     content: `Create a one-line description with the following description terms: ${description} please try to make it as clinical a possible, so limit the flowery language`,
@@ -58,8 +61,8 @@ app.get('/altText', async (request, response) => {
             ],
         });
 
-        const altText = completion.choices[0].message.content; 
-        response.status(200).json({ altText }); 
+        const altText = completion.choices[0].message.content;
+        response.status(200).json({ altText });
     } catch (error) {
         console.error('Error retrieving alt text:', error);
         response.status(500).json({ error: 'Error retrieving alt text.' });
@@ -79,19 +82,19 @@ if (!fs.existsSync(photosPath)) {
 // Multer storage configuration
 const storage = multer.diskStorage({
     destination: (request, file, cb) => {
-        cb(null, photosPath); 
+        cb(null, photosPath);
     },
     filename: (request, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); 
+        cb(null, Date.now() + path.extname(file.originalname));
     }
 });
 const upload = multer({ storage: storage });
 const visionClient = new ImageAnnotatorClient({
-    keyFilename: path.join(__dirname, 'autopopulate.json'), 
+    keyFilename: path.join(__dirname, 'autopopulate.json'),
 });
 
 //POST For NEW EVENTS 
-app.post('/newEvents', upload.single('file'), async (request, response) => {
+app.post('/uploadPhoto', upload.single('file'), async (request, response) => {
     const filePath = path.join(photosPath, request.file.filename);
     console.log('File saved at:', filePath);
 
@@ -118,19 +121,10 @@ app.post('/newEvents', upload.single('file'), async (request, response) => {
             const jsonFilePath = path.join(photosPath, `${request.file.filename}.json`);
             fs.writeFileSync(jsonFilePath, JSON.stringify(jsonLabel, null, 2));
 
-            // Extract event details from the request body
-            const {date, location, eventType, eventDescription, eventTitle} = request.body;
-
-            // Validate required event details
-            if (!date || !location || !eventType || !eventDescription || !eventTitle) {
-                return response.status(400).json({ error: 'Please provide all necessary event details.' });
-            }
-
-            // Insert the new event into the database
             const eventPhoto = `/${request.file.filename}`
             const eventResult = await pool.query(
-                'INSERT INTO events (date, location, eventType, eventDescription, eventTitle, eventPhoto, eventAltText) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-                [date, location, eventType, eventDescription, eventTitle, eventPhoto, labelsDescriptions]
+                'INSERT INTO events (eventPhoto, eventDescription) VALUES ($1, $2) RETURNING *',
+                [eventPhoto, labelsDescriptions]
             );
 
             // Return the created event
@@ -147,19 +141,46 @@ app.post('/newEvents', upload.single('file'), async (request, response) => {
         return response.status(500).json({ error: 'Error processing the upload.' });
     }
 });
+
+app.put('/editEvents/:creatorId/:eventId', async (request, response) => {
+    const creatorId = request.params.creatorId;
+    const eventId = request.params.eventId;
+    const { date, location, eventType, eventDescription, eventTitle, eventAltText } = request.body;
+
+    // Check if all fields are provided
+    if (!date || !location || !eventType || !eventDescription || !eventTitle || !eventAltText) {
+        return response.status(400).json({ error: "All fields are required." });
+    }
+
+    try {
+        const result = await pool.query(
+            'UPDATE events SET date = $1, location = $2, eventType = $3, eventDescription = $4, eventTitle = $5, eventAltText = $6 WHERE eventId = $7 AND creatorId = $8 RETURNING *',
+            [date, location, eventType, eventDescription, eventTitle, eventAltText, eventId, creatorId]
+        );
+
+        if (result.rowCount === 0) {
+            return response.status(404).json({ error: 'Event not found or you do not have permission to edit this event.' });
+        }
+
+        response.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error executing query', error);
+        response.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 // -------------------------------------------------------------------------------------------------
 //API GET to the NewsAPI
 app.get('/news/romance', async (request, response) => {
     const url = `https://newsapi.org/v2/everything?q=romance&apiKey=${process.env.NEWS_API_KEY}`;
 
     try {
-        const response = await axios.get(url);
-
-        // Send the articles back in the response
-        return response.json(response.data.articles);
+        const result = await axios.get(url);
+        const data = await result.data.articles;
+        return response.json(data);
     } catch (error) {
         console.error('Error fetching news:', error);
-        return res.status(500).json({ error: 'Error fetching news from News API' });
+        return response.status(500).json({ error: 'Error fetching news from News API' });
     }
 });
 // -------------------------------------------------------------------------------------------------
@@ -233,7 +254,7 @@ app.delete('/deleteUser/:userId', async (request, response) => {
             return response.status(404).json({ error: 'User not found' });
         }
 
-        response.status(204).send(); 
+        response.status(204).send();
     } catch (error) {
         console.error('Error executing query', error);
         response.status(500).json({ error: 'Internal Server Error' });
@@ -292,7 +313,7 @@ app.delete('/deleteEvent/:creatorId/:eventId', async (request, response) => {
             return response.status(404).json({ error: 'Event not found or you do not have permission to delete this event.' });
         }
 
-        response.status(204).send(); 
+        response.status(204).send();
     } catch (error) {
         console.error('Error executing query', error);
         response.status(500).json({ error: 'Internal Server Error' });
@@ -364,11 +385,11 @@ app.post('/register', async (request, response) => {
 });
 
 app.delete('/deleteUserEvent/:userEventId', async (request, response) => {
-    const userEventId = request.params.userEventId; 
+    const userEventId = request.params.userEventId;
 
     try {
         const result = await pool.query(
-            'DELETE FROM UserEvents WHERE userEventId = $1 RETURNING *', 
+            'DELETE FROM UserEvents WHERE userEventId = $1 RETURNING *',
             [userEventId]
         );
 
@@ -376,7 +397,7 @@ app.delete('/deleteUserEvent/:userEventId', async (request, response) => {
             return response.status(404).json({ error: 'User event registration not found.' });
         }
 
-        return response.status(204).send(); 
+        return response.status(204).send();
     } catch (error) {
         console.error('Error executing query', error);
         response.status(500).json({ error: 'Internal Server Error' });
