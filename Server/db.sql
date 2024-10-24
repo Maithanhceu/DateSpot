@@ -75,7 +75,9 @@ CREATE TABLE public.userevents (
     eventtype character varying(255),
     eventdescription text,
     eventtitle character varying(255),
-    eventphoto character varying(255)
+    eventphoto character varying(255),
+    eventalttext character varying (255),
+    eventgroup character varying (255)
 );
 
 
@@ -166,8 +168,8 @@ ALTER TABLE ONLY public.users ALTER COLUMN userid SET DEFAULT nextval('public.us
 -- Data for Name: events; Type: TABLE DATA; Schema: public; Owner: thanhmai
 --
 
-COPY public.events (eventid, creatorid, date, location, eventtype, eventdescription, eventtitle, eventphoto) FROM stdin;
-1	1	2024-11-13	Brooklyn	Comedy Show	A fun comedy show	Live, Laugh, Love	/Comedy_show.jpg
+COPY public.events (eventid, creatorid, date, location, eventtype, eventdescription, eventtitle, eventphoto, eventalttext, eventgroup) FROM stdin;
+1	1	2024-11-13	Brooklyn	Comedy Show	A fun comedy show	Live, Laugh, Love	/Comedy_show.jpg null null 
 \.
 
 
@@ -175,8 +177,8 @@ COPY public.events (eventid, creatorid, date, location, eventtype, eventdescript
 -- Data for Name: userevents; Type: TABLE DATA; Schema: public; Owner: thanhmai
 --
 
-COPY public.userevents (usereventid, userid, eventid, date, location, eventtype, eventdescription, eventtitle, eventphoto) FROM stdin;
-1	1	1	2024-11-13	Brooklyn	Comedy Show	A fun comedy show	Live, Laugh, Love	/Comedy_show.jpg
+COPY public.userevents (usereventid, userid, eventid, date, location, eventtype, eventdescription, eventtitle, eventphoto, eventalttext, eventgroup) FROM stdin;
+1	1	1	2024-11-13	Brooklyn	Comedy Show	A fun comedy show	Live, Laugh, Love	/Comedy_show.jpg null null 
 \.
 
 

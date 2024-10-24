@@ -6,7 +6,15 @@ export default defineConfig({
   server: {
     proxy: {
       '/news/romance': {
-        target: 'http://localhost:1113', 
+        target: 'http://localhost:1113',
+        changeOrigin: true,
+      },
+      '/altText/': {
+        target: 'http://localhost:1113/',
+        changeOrigin: true,
+      },
+      '/uploadPhoto': {
+        target: 'http://localhost:1113/',
         changeOrigin: true,
       },
     },
