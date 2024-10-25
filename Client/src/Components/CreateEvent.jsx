@@ -37,6 +37,7 @@ function CreateEvent() {
             setError(error.message);
         }
     };
+    let number = eventId;
 
     const fetchAltText = async () => {
         if (!eventId) {
@@ -65,7 +66,6 @@ function CreateEvent() {
             fetchAltText();
         }
     }, [eventId]);
-    let number = eventId;
 
 
     // Handle PUT request to update event
