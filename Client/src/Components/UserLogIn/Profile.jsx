@@ -6,7 +6,7 @@ function Profile() {
     return (
         <>
             {isAuthenticated && (
-                <article className="Column">
+                <article className="">
                     {user?.picture && (
                         <img src={user.picture} alt={user.name} />
                     )}

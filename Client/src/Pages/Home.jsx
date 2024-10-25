@@ -4,8 +4,9 @@ import NavBar from "../Components/NavBar";
 export default function Home() {
     return (
         <>
-        <p> Home Page </p>
         <NavBar/>
-        <NewsAPI /></>
+        <p> Home Page </p>
+        <NewsAPI />
+        </>
     );
 }
