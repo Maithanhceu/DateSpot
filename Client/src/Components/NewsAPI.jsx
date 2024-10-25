@@ -7,7 +7,6 @@ function NewsAPI() {
         const fetchData = async () => {
             try {
                 const response = await fetch('/news/romance');
-                console.log(response); 
                 const result = await response.json();
                 setNewData(result);
             } catch (error) {
