@@ -5,6 +5,9 @@ import LoginButton from "../Components/UserLogIn/LoginButton";
 import Profile from "./UserLogIn/Profile";
 import { useAuth0 } from "@auth0/auth0-react";
 
+//Documentation: https://www.youtube.com/watch?v=pAzqscDx580
+//This is a helpful Youtube video on how to integrate Auth0 into your application :)
+
 function NavBar() {
     const { user, isAuthenticated } = useAuth0();
     const [userId, setUserId] = useState(null);
