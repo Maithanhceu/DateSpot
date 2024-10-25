@@ -31,7 +31,6 @@ function CreateEvent() {
 
             const responseData = await response.json();
             setEventId(responseData.eventid);
-            console.log('Photo uploaded successfully! Event ID:', responseData.eventid);
         } catch (error) {
             console.error('Error uploading photo:', error);
             setError(error.message);
@@ -53,7 +52,6 @@ function CreateEvent() {
             const data = await response.json();
             setEventAltText(data.altText);
             setError('');
-            console.log('Fetched alt text:', data.altText);
         } catch (err) {
             setError(err.message);
             setEventAltText('');
@@ -97,7 +95,6 @@ function CreateEvent() {
             }
 
             const updatedEvent = await response.json();
-            console.log('Event updated successfully:', updatedEvent);
             setError('');
         } catch (error) {
             console.error('Error updating event:', error);
