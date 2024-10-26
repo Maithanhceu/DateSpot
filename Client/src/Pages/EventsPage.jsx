@@ -1,12 +1,11 @@
-import CreateEvent from "../Components/CreateEvent";
-import NavBar from "../Components/NavBar";
+import NewsAPI from "../Components/NewsAPI";
+
 
 export default function EventsPage() {
     return (
         <div>
-            <NavBar/>
             <h1>Events Page</h1>
-            <CreateEvent/>
+            <NewsAPI/> 
         </div>
     );
 }

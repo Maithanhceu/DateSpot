@@ -1,12 +1,15 @@
-import NewsAPI from "../Components/NewsAPI";
-import NavBar from "../Components/NavBar";
+import CreateEvent from "../Components/CreateEvent";
+import { AltTextProvider } from '../Components/AltTextContext';
+
 
 export default function Home() {
     return (
         <>
-        <NavBar/>
-        <p> Home Page </p>
-        <NewsAPI />
+            <p> Home Page </p>
+            <AltTextProvider>
+                <CreateEvent />
+            </AltTextProvider>
+
         </>
     );
 }

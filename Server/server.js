@@ -142,30 +142,31 @@ app.post('/uploadPhoto', upload.single('file'), async (request, response) => {
     }
 });
 
-app.put('/editEvents/:creatorId/:eventId', async (request, response) => {
-    const creatorId = request.params.creatorId;
-    const eventId = request.params.eventId;
-    const { date, location, eventType, eventDescription, eventTitle, eventAltText } = request.body;
+app.put('/editEvents/:eventId', async (req, res) => {
+    const { eventId } = req.params;
+    const { userId, date, location, eventType, eventDescription, eventTitle, eventAltText, eventGroup } = req.body;
 
-    // Check if all fields are provided
-    if (!date || !location || !eventType || !eventDescription || !eventTitle || !eventAltText) {
-        return response.status(400).json({ error: "All fields are required." });
+    // Validate the date input
+    if (!date || isNaN(Date.parse(date))) {
+        return res.status(400).json({ message: 'Invalid date input. Please provide a valid date.' });
     }
 
     try {
         const result = await pool.query(
-            'UPDATE events SET date = $1, location = $2, eventType = $3, eventDescription = $4, eventTitle = $5, eventAltText = $6 WHERE eventId = $7 AND creatorId = $8 RETURNING *',
-            [date, location, eventType, eventDescription, eventTitle, eventAltText, eventId, creatorId]
+            `UPDATE Events SET userId = $1, date = $2, location = $3, eventType = $4, eventDescription = $5, eventTitle = $6, eventAltText = $7, eventGroup = $8
+            WHERE eventId = $9`,
+            [userId, date, location, eventType, eventDescription, eventTitle, eventAltText, eventGroup, eventId]
         );
 
         if (result.rowCount === 0) {
-            return response.status(404).json({ error: 'Event not found or you do not have permission to edit this event.' });
+            return res.status(404).json({ message: 'Event not found or not updated' });
         }
 
-        response.status(200).json(result.rows[0]);
+        const updatedEvent = await pool.query(`SELECT * FROM Events WHERE eventId = $1`, [eventId]);
+        return res.json(updatedEvent.rows[0]);
     } catch (error) {
-        console.error('Error executing query', error);
-        response.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error updating event:', error);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 });
 
@@ -185,27 +186,39 @@ app.get('/news/romance', async (request, response) => {
 });
 // -------------------------------------------------------------------------------------------------
 // API GET Users Table
-app.get('/usersTable', async (request, response) => {
+app.get('/checkUser/:userId', async (req, res) => {
+    const { userId } = req.params;
+
     try {
-        const result = await pool.query('SELECT * FROM users');
-        response.json(result.rows);
+        const result = await pool.query('SELECT EXISTS(SELECT 1 FROM users WHERE user_id = $1)', [userId]);
+        const exists = result.rows[0].exists; 
+        res.json({ exists });
     } catch (error) {
-        console.error('Error executing query', error);
-        response.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error checking user existence:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
 app.post('/newUser', async (request, response) => {
-    const { username, password, firstname, lastname, email } = request.body;
+    const { userId } = request.body;
 
-    if (!username || !password || !firstname || !lastname || !email) {
-        return response.status(400).json({ error: "Please enter all the necessary information, thank you!" });
+    if (!userId) {
+        return response.status(400).json({ error: "User ID is required." });
     }
 
     try {
+        const existingUser = await pool.query(
+            'SELECT * FROM users WHERE userId = $1',
+            [userId]
+        );
+
+        if (existingUser.rows.length > 0) {
+            return response.status(200).json({ message: "User already exists. No action taken." });
+        }
+
         const result = await pool.query(
-            'INSERT INTO users (username, password, firstname, lastname, email) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [username, password, firstname, lastname, email]
+            'INSERT INTO users (userId) VALUES ($1) RETURNING *',
+            [userId]
         );
 
         response.status(201).json(result.rows[0]);
@@ -215,6 +228,7 @@ app.post('/newUser', async (request, response) => {
         response.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 app.put('/updateUser/:userId', async (request, response) => {
     const userId = request.params.userId;
@@ -357,7 +371,9 @@ app.post('/register', async (request, response) => {
                 e.eventType,
                 e.eventDescription,
                 e.eventTitle,
-                e.eventPhoto
+                e.eventPhoto,
+                e.eventAltText, 
+                e.eventGroup
             FROM Events e
             WHERE e.eventId = $1`,
             [eventId]
@@ -368,8 +384,8 @@ app.post('/register', async (request, response) => {
         }
 
         const insertUserEvent = await pool.query(
-            `INSERT INTO UserEvents (userId, eventId, date, location, eventType, eventDescription, eventTitle, eventPhoto)
-            SELECT $1, $2, e.date, e.location, e.eventType, e.eventDescription, e.eventTitle, e.eventPhoto
+            `INSERT INTO UserEvents (userId, eventId, date, location, eventType, eventDescription, eventTitle, eventPhoto, eventAltText, eventGroup)
+            SELECT $1, $2, e.date, e.location, e.eventType, e.eventDescription, e.eventTitle, e.eventPhoto, e.eventAltText, e.eventGroup
             FROM Events e
             WHERE e.eventId = $2
             RETURNING *`,
@@ -380,9 +396,10 @@ app.post('/register', async (request, response) => {
 
     } catch (error) {
         console.error('Error executing query', error);
-        response.status(500).json({ error: 'Internal Server Error' });
+        response.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
 });
+
 
 app.delete('/deleteUserEvent/:userEventId', async (request, response) => {
     const userEventId = request.params.userEventId;
