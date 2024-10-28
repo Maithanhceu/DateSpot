@@ -1,0 +1,28 @@
+.navbar {
+    display: flex; 
+    justify-content: flex-end; 
+    align-items: center; 
+    padding: 10px 20px; 
+    width: 100%; 
+    box-sizing: border-box; 
+}
+
+.nav-links {
+    display: flex; 
+    align-items: center; 
+}
+
+.nav-links a, 
+.nav-links button, 
+.nav-links img {   
+    white-space: nowrap; 
+    text-align: center; 
+    margin-left: 20px; 
+}
+
+.nav-links img {
+    max-height: 30px; 
+    width: 30px;
+    border-radius: 50%; 
+    display: block; 
+}
