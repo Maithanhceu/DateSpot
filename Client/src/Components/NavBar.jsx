@@ -7,6 +7,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { UserIdContext } from "../Components/UserEvents/UserIdContext"; 
 import '../CSS/NavBar.css';
 
+//Documentation: https://www.youtube.com/watch?v=pAzqscDx580
+//This is a helpful Youtube video on how to integrate Auth0 into your application :)
+
 function NavBar() {
     const { setUserId, userId } = useContext(UserIdContext);  
     const { user, isAuthenticated } = useAuth0();

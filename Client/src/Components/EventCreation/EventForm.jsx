@@ -1,10 +1,10 @@
 import { useState, useContext} from 'react';
 import { UserIdContext } from '../UserEvents/UserIdContext';
-import FetchAltText from '../FetchAltText';
+import FetchAltText from './FetchAltText';
 import { AltTextContext } from './AltTextContext';
-import '../CSS/CreateEvent.css';
+import './CreateEvent.css';
 
-function CreateEvent() {
+function EventForm() {
     const { userId } = useContext(UserIdContext);
     const { eventAltText} = useContext(AltTextContext);
     const [eventId, setEventId] = useState('');
@@ -44,7 +44,7 @@ function CreateEvent() {
     };
 
     // Handle form submission (PUT request to update the event)
-    const handleSubmit = async (event) => {
+    const handleSubmitPut  = async (event) => {
         event.preventDefault();
 
         const putRequestBody = {
@@ -83,7 +83,7 @@ function CreateEvent() {
     return (
         <div>
             {isFormVisible && (
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmitPut}>
                     <label htmlFor="eventTitle">Event Title:</label>
                     <input
                         id="eventTitle"
@@ -166,9 +166,8 @@ function CreateEvent() {
                     <button type="submit">Update Event</button>
                 </form>
             )}
-            {error && <p className="error">{error}</p>} 
         </div>    
     );
 }
 
-export default CreateEvent;
+export default EventForm;

@@ -1,13 +1,16 @@
-import CreateEvent from "../Components/CreateEvent";
-import { AltTextProvider } from '../Components/AltTextContext';
+import { AltTextProvider} from '../Components/EventCreation/AltTextContext';
+import NewsAPI from '../Components/NewsAPI';
+import EventForm from '../Components/EventCreation/EventForm';
 
 
 export default function Home() {
     return (
         <>
-            <p> Home Page </p>
             <AltTextProvider>
-                <CreateEvent />
+                <div className='row-container'>
+                <EventForm/>
+                <NewsAPI/>
+                </div>
             </AltTextProvider>
 
         </>

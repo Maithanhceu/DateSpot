@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import '../CSS/NewsAPI.css';
 
 function NewsAPI() {
     const [newsData, setNewData] = useState({});
@@ -18,11 +19,25 @@ function NewsAPI() {
     }, []);
     
     return (
-        <div>
-            <h1>NewsAPI</h1>
-            {newsData ? (
+        <div className='news-api-container'>
+            {newsData.length > 0 ? (
                 <div>
-                    {JSON.stringify(newsData, null, 2)}
+                    {newsData.map((article, index) => (
+                        <div key={index} className="article-container">
+                            {article.urlToImage && (
+                                <img 
+                                    src={article.urlToImage} 
+                                    alt={article.title} 
+                                    className="article-image" 
+                                />
+                            )}
+                            <p>Author: {article.author}</p>
+                            <p>
+                                Title: <a href={article.url} target="_blank" rel="noopener noreferrer">{article.title}</a>
+                            </p>
+                            <p>Description: {article.description}</p>
+                        </div>
+                    ))}
                 </div>
             ) : (
                 <div>Error fetching news data</div>
@@ -30,4 +45,5 @@ function NewsAPI() {
         </div>
     );
 }
+
 export default NewsAPI;

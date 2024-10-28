@@ -173,7 +173,7 @@ app.put('/editEvents/:eventId', async (req, res) => {
 // -------------------------------------------------------------------------------------------------
 //API GET to the NewsAPI
 app.get('/news/romance', async (request, response) => {
-    const url = `https://newsapi.org/v2/everything?q=romance&apiKey=${process.env.NEWS_API_KEY}`;
+    const url = `https://newsapi.org/v2/everything?q=romance&pageSize=3&apiKey=${process.env.NEWS_API_KEY}`;
 
     try {
         const result = await axios.get(url);
@@ -287,19 +287,15 @@ app.get('/events', async (request, response) => {
     }
 });
 
-app.put('/editEvents/:creatorId/:eventId', async (request, response) => {
-    const creatorId = request.params.creatorId;
+app.put('/editEvents/:userId/:eventId', async (request, response) => {
+    const userId = request.params.userId;
     const eventId = request.params.eventId;
-    const { date, location, eventType, eventDescription, eventTitle, eventPhoto } = request.body;
-
-    if (!date || !location || !eventType || !eventDescription || !eventTitle || !eventPhoto) {
-        return response.status(400).json({ error: "All fields are required." });
-    }
+    const { date, location, eventType, eventDescription, eventTitle, eventPhoto, eventGroup } = request.body;
 
     try {
         const result = await pool.query(
-            'UPDATE events SET date = $1, location = $2, eventType = $3, eventDescription = $4, eventTitle = $5, eventPhoto = $6 WHERE eventId = $7 AND creatorId = $8 RETURNING *',
-            [date, location, eventType, eventDescription, eventTitle, eventPhoto, eventId, creatorId]
+            'UPDATE events SET date = $1, location = $2, eventType = $3, eventDescription = $4, eventTitle = $5, eventPhoto = $6, eventGroup =$7 WHERE eventId = $8 AND userId = $9 RETURNING *',
+            [date, location, eventType, eventDescription, eventTitle, eventPhoto, eventGroup, eventId, userId]
         );
 
         if (result.rowCount === 0) {
@@ -313,26 +309,29 @@ app.put('/editEvents/:creatorId/:eventId', async (request, response) => {
     }
 });
 
-app.delete('/deleteEvent/:creatorId/:eventId', async (request, response) => {
-    const creatorId = request.params.creatorId;
-    const eventId = request.params.eventId;
+app.delete('/deleteEvent/:userId/:eventId', async (request, response) => {
+    const { userId, eventId } = request.params;
 
     try {
+        await pool.query('DELETE FROM userevents WHERE eventid = $1', [eventId]);
+
         const result = await pool.query(
-            'DELETE FROM events WHERE eventId = $1 AND creatorId = $2 RETURNING *',
-            [eventId, creatorId]
+            'DELETE FROM events WHERE eventId = $1 AND userId = $2 RETURNING *',
+            [eventId, userId]
         );
 
         if (result.rowCount === 0) {
             return response.status(404).json({ error: 'Event not found or you do not have permission to delete this event.' });
         }
 
-        response.status(204).send();
+        response.status(204).send(); 
     } catch (error) {
         console.error('Error executing query', error);
         response.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+
 
 // -------------------------------------------------------------------------------------------------
 //User Events Table 
@@ -401,12 +400,12 @@ app.post('/register', async (request, response) => {
 });
 
 
-app.delete('/deleteUserEvent/:userEventId', async (request, response) => {
-    const userEventId = request.params.userEventId;
+app.delete('/deleteUserEvent/:userId/:eventId', async (request, response) => {
+    const eventId = request.params.eventId;
 
     try {
         const result = await pool.query(
-            'DELETE FROM UserEvents WHERE userEventId = $1 RETURNING *',
+            'DELETE FROM UserEvents WHERE eventId = $1 RETURNING *',
             [userEventId]
         );
 

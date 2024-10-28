@@ -1,4 +1,5 @@
 import UserEvents from "../Components/UserEvents/UserEvents";
+
 export default function UsersPage() {
 
     return (
