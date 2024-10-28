@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { UserIdContext } from './UserIdContext';
 import EditEvents from './EditEvents';
+import DeleteEvent from './DeleteEvent';
 
 function UserEvents() {
     const [data, setData] = useState([]);
@@ -68,6 +69,7 @@ function UserEvents() {
                                 userId={userId}
                                 eventId={event.eventid}
                             />
+                            <DeleteEvent {userId} eventUserId={event.userid}  eventId={event.eventid} />
                         </>
                     )}
 
