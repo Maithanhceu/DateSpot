@@ -1,5 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { UserIdContext } from './UserIdContext';
+import EditEvents from './EditEvents';
 
 function UserEvents() {
     const [data, setData] = useState([]);
@@ -54,7 +55,22 @@ function UserEvents() {
                     <img src={event.eventphoto} alt={event.eventalttext} />
                     <p>Event Type: {event.eventtype}</p>
                     <button onClick={() => registerEvent(event.eventid)}>Register</button>
-                
+                    {userId === event.userid && (
+                        <>
+                            <EditEvents
+                                date={event.date}
+                                location={event.location}
+                                eventType={event.eventtype}
+                                eventDescription={event.eventdescription}
+                                eventTitle={event.eventtitle}
+                                eventPhoto={event.eventphoto}
+                                eventGroup={event.eventgroup}
+                                userId={userId}
+                                eventId={event.eventid}
+                            />
+                        </>
+                    )}
+
                 </div>
             ))}
         </div>
