@@ -20,7 +20,6 @@ And you can see my entire proposal here: [Link to my proposal](https://docs.goog
 ![OpenAI GPT](https://img.shields.io/badge/-OpenAI%20GPT-00A3E0?style=flat&logo=openai&logoColor=white)
 ![NewsAPI](https://img.shields.io/badge/-NewsAPI-FF5733?style=flat&logo=appveyor&logoColor=white)
 ![Google Vision](https://img.shields.io/badge/-Google%20Vision-4285F4?style=flat&logo=google&logoColor=white)
-![Google Translate](https://img.shields.io/badge/-Google%20Translate-DB4437?style=flat&logo=google&logoColor=white)
 ![Google Autocomplete](https://img.shields.io/badge/-Google%20Autocomplete-DB4437?style=flat&logo=google&logoColor=white)
 ![Jest](https://img.shields.io/badge/-Jest-C21325?style=flat&logo=jest&logoColor=white)
 ![React Testing Library](https://img.shields.io/badge/-React%20Testing%20Library-CA424D?style=flat&logo=testing-library&logoColor=white)
