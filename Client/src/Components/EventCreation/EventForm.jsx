@@ -59,7 +59,7 @@ function EventForm() {
         };
 
         try {
-            const response = await fetch(`http://localhost:1113/editEvents/${eventId}`, {
+            const response = await fetch(`/editEvents/${eventId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
