@@ -1,4 +1,4 @@
-import { useState, useContext} from 'react';
+import { useState, useContext } from 'react';
 import { UserIdContext } from '../UserEvents/UserIdContext';
 import FetchAltText from './FetchAltText';
 import { AltTextContext } from './AltTextContext';
@@ -6,14 +6,14 @@ import './EventForm.css';
 
 function EventForm() {
     const { userId } = useContext(UserIdContext);
-    const { eventAltText} = useContext(AltTextContext);
+    const { eventAltText } = useContext(AltTextContext);
     const [eventId, setEventId] = useState('');
-    const [eventTitle, setEventTitle] = useState(''); 
-    const [date, setDate] = useState(''); 
-    const [location, setLocation] = useState(''); 
-    const [eventType, setEventType] = useState(''); 
+    const [eventTitle, setEventTitle] = useState('');
+    const [date, setDate] = useState('');
+    const [location, setLocation] = useState('');
+    const [eventType, setEventType] = useState('');
     const [eventGroup, setEventGroup] = useState('');
-    const [eventDescription, setEventDescription] = useState(''); 
+    const [eventDescription, setEventDescription] = useState('');
     const [error, setError] = useState('');
     const [isFormVisible, setIsFormVisible] = useState(true);
 
@@ -44,7 +44,7 @@ function EventForm() {
     };
 
     // Handle form submission (PUT request to update the event)
-    const handleSubmitPut  = async (event) => {
+    const handleSubmitPut = async (event) => {
         event.preventDefault();
 
         const putRequestBody = {
@@ -88,8 +88,8 @@ function EventForm() {
                     <input
                         id="eventTitle"
                         type="text"
-                        value={eventTitle} 
-                        onChange={(e) => setEventTitle(e.target.value)} 
+                        value={eventTitle}
+                        onChange={(e) => setEventTitle(e.target.value)}
                         placeholder="Enter a Title"
                         aria-describedby="eventTitleHint"
                     />
@@ -99,49 +99,49 @@ function EventForm() {
                     <input
                         id="photoUpload"
                         type="file"
-                        onChange={handlePhotoUpload} 
+                        onChange={handlePhotoUpload}
                         aria-describedby="photoUploadHint"
                     />
                     <span id="photoUploadHint" className="visually-hidden">Select a photo to upload for the event.</span>
-                    
-                    <FetchAltText eventId={eventId}/>
+
+                    <FetchAltText eventId={eventId} />
 
                     <label htmlFor="eventDescription">Event Description:</label>
                     <textarea
                         id="eventDescription"
-                        value={eventDescription} 
-                        onChange={(e) => setEventDescription(e.target.value)} 
+                        value={eventDescription}
+                        onChange={(e) => setEventDescription(e.target.value)}
                         placeholder="Please enter a description of the Event"
                         aria-describedby="descriptionHint"
                     />
                     <span id="descriptionHint" className="visually-hidden">Describe the event in detail.</span>
+                    <div className='form-location-date'>
+                        <label htmlFor="eventDate">Event Date:</label>
+                        <input
+                            id="eventDate"
+                            type="date"
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            aria-describedby="dateHint"
+                        />
+                        <span id="dateHint" className="visually-hidden">Select the date for the event.</span>
 
-                    <label htmlFor="eventDate">Event Date:</label>
-                    <input
-                        id="eventDate"
-                        type="date"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        aria-describedby="dateHint"
-                    />
-                    <span id="dateHint" className="visually-hidden">Select the date for the event.</span>
-
-                    <label htmlFor="eventLocation">Location:</label>
-                    <input
-                        id="eventLocation"
-                        type="text"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        placeholder='Please enter a location'
-                        aria-describedby="locationHint"
-                    />
-                    <span id="locationHint" className="visually-hidden">Specify the location of the event.</span>
-
+                        <label htmlFor="eventLocation">Location:</label>
+                        <input
+                            id="eventLocation"
+                            type="text"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            placeholder='Please enter a location'
+                            aria-describedby="locationHint"
+                        />
+                        <span id="locationHint" className="visually-hidden">Specify the location of the event.</span>
+                    </div>
                     <label htmlFor="eventType">Event Type:</label>
                     <select
                         id="eventType"
-                        value={eventType} 
-                        onChange={(e) => setEventType(e.target.value)} 
+                        value={eventType}
+                        onChange={(e) => setEventType(e.target.value)}
                         aria-describedby="eventTypeHint"
                     >
                         <option value="">Select an event type</option>
@@ -154,7 +154,7 @@ function EventForm() {
                     <select
                         id="eventGroup"
                         value={eventGroup}
-                        onChange={(e) => setEventGroup(e.target.value)} 
+                        onChange={(e) => setEventGroup(e.target.value)}
                         aria-describedby="eventGroupHint"
                     >
                         <option value="">Select a group</option>
@@ -166,7 +166,7 @@ function EventForm() {
                     <button type="submit">Update Event</button>
                 </form>
             )}
-        </div>    
+        </div>
     );
 }
 
