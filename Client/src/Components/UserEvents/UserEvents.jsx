@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import { UserIdContext } from './UserIdContext';
 import EditEvents from './EditEvents';
 import DeleteEvent from './DeleteEvent';
+import '../CSS/UserEvents.css';
 
 function UserEvents() {
     const [data, setData] = useState([]);
@@ -47,33 +48,36 @@ function UserEvents() {
 
     return (
         <div>
-            <h2>User Events</h2>
+            <h1>Events in your Area </h1>
             {data.map((event) => (
-                <div key={event.eventid}>
-                    <p>Date: {event.date}</p>
-                    <p>Location: {event.location}</p>
+                <div className="event-container" key={event.eventid}>
+                    <p>Event: {event.eventtitle}</p>
+                    <img src={`http://localhost:1113/photos/${event.eventphoto}`} alt={event.eventalttext} />
                     <p>Description: {event.eventdescription}</p>
-                    <img src={event.eventphoto} alt={event.eventalttext} />
+                    <p>Date:{new Date(event.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    <p>Location: {event.location}</p>
                     <p>Event Type: {event.eventtype}</p>
-                    <button onClick={() => registerEvent(event.eventid)}>Register</button>
-                    {userId === event.userid && (
-                        <>
-                            <EditEvents
-                                date={event.date}
-                                location={event.location}
-                                eventType={event.eventtype}
-                                eventDescription={event.eventdescription}
-                                eventTitle={event.eventtitle}
-                                eventPhoto={event.eventphoto}
-                                eventGroup={event.eventgroup}
-                                userId={userId}
-                                eventId={event.eventid}
-                            />
-                            {/* Passing props to DeleteEvent */}
-                            <DeleteEvent userId={userId} eventUserId={event.userid}  eventId={event.eventid} />
-                        </>
-                    )}
-
+                    <p>Event Group: {event.eventgroup}</p>
+                    <div className='row'>
+                        <button onClick={() => registerEvent(event.eventid)}>Register</button>
+                        {userId === event.userid && (
+                            <>
+                                <EditEvents
+                                    date={event.date}
+                                    location={event.location}
+                                    eventType={event.eventtype}
+                                    eventDescription={event.eventdescription}
+                                    eventTitle={event.eventtitle}
+                                    eventPhoto={event.eventphoto}
+                                    eventGroup={event.eventgroup}
+                                    userId={userId}
+                                    eventId={event.eventid}
+                                />
+                                {/* Passing props to DeleteEvent */}
+                                <DeleteEvent userId={userId} eventUserId={event.userid} eventId={event.eventid} />
+                            </>
+                        )}
+                    </div>
                 </div>
             ))}
         </div>

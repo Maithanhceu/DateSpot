@@ -1,11 +1,11 @@
-import UserEvents from "../Components/UserEvents/UserEvents";
+import AllEvents from "../Components/UserEvents/AllEvents";
 
 export default function UsersPage() {
 
     return (
         <>
         <p> Users Page </p>
-        <UserEvents/>
+        <AllEvents/> 
         </>
     );
 }

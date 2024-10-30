@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import '../CSS/NewsAPI.css';
+import './CSS/NewsAPI.css'
 
 function NewsAPI() {
     const [newsData, setNewData] = useState({});
@@ -19,6 +19,7 @@ function NewsAPI() {
     
     return (
         <div className='news-api-container'>
+            <h2>News Articles</h2>
             {newsData.length > 0 ? (
                 <div>
                     {newsData.map((article, index) => (

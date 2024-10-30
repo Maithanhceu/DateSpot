@@ -2,7 +2,7 @@ import { useState, useContext } from 'react';
 import { UserIdContext } from '../UserEvents/UserIdContext';
 import FetchAltText from './FetchAltText';
 import { AltTextContext } from './AltTextContext';
-import './EventForm.css';
+import '../CSS/EventForm.css'
 
 function EventForm() {
     const { userId } = useContext(UserIdContext);

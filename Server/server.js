@@ -141,6 +141,7 @@ app.post('/uploadPhoto', upload.single('file'), async (request, response) => {
         return response.status(500).json({ error: 'Error processing the upload.' });
     }
 });
+app.use('/photos', express.static(path.join(__dirname, 'Photos')));
 
 app.put('/editEvents/:eventId', async (req, res) => {
     const { eventId } = req.params;
@@ -335,15 +336,18 @@ app.delete('/deleteEvent/:userId/:eventId', async (request, response) => {
 
 // -------------------------------------------------------------------------------------------------
 //User Events Table 
-app.get('/userEventsTable', async (request, response) => {
+app.get('/userEventsTable/:userId', async (request, response) => {
+    const userId = request.params.userId; 
+
     try {
-        const result = await pool.query('SELECT * FROM userevents');
+        const result = await pool.query('SELECT * FROM userevents WHERE userId = $1', [userId]);
         response.json(result.rows);
     } catch (error) {
         console.error('Error executing query', error);
         response.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 app.post('/register', async (request, response) => {
     const { userId, eventId } = request.body;

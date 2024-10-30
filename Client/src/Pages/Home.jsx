@@ -1,7 +1,7 @@
 import { AltTextProvider} from '../Components/EventCreation/AltTextContext';
 import NewsAPI from '../Components/NewsAPI';
 import EventForm from '../Components/EventCreation/EventForm';
-import './Home.css'
+import './CSS/Home.css'
 
 
 
