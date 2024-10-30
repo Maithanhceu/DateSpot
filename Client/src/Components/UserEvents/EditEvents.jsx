@@ -67,6 +67,7 @@ function EditEvents({ date, location, eventType, eventDescription, eventTitle, e
             <button 
                 type="button" 
                 onClick={() => setIsEditing(!isEditing)}
+                style={{ width: 'auto'}}
             >
                 {isEditing ? "Cancel Edit" : "Edit Event"}
             </button>

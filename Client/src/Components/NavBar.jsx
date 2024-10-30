@@ -5,7 +5,7 @@ import { useEffect, useContext } from "react";
 import Profile from "./UserLogIn/Profile";
 import { useAuth0 } from "@auth0/auth0-react";
 import { UserIdContext } from "../Components/UserEvents/UserIdContext"; 
-import '../CSS/NavBar.css';
+import './CSS/NavBar.css';
 
 //Documentation: https://www.youtube.com/watch?v=pAzqscDx580
 //This is a helpful Youtube video on how to integrate Auth0 into your application :)

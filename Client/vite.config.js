@@ -14,6 +14,7 @@ export default defineConfig({
       '/altText': { target: proxyTarget, changeOrigin: true },
       '/deleteEvent':{ target: proxyTarget, changeOrigin: true },
       '/editEvents/':{ target: proxyTarget, changeOrigin: true },
+      '/userEventsTable/':{ target: proxyTarget, changeOrigin: true },
     },
   },
 });

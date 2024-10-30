@@ -6,7 +6,7 @@
 }
 
 .article-container {
-    background: white;
+    background: rgb(209, 105, 195);
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 20px;
@@ -21,11 +21,11 @@
 
 p {
     margin: 5px 0;
-    color: #333;
+    color: #e8e7e7;
 }
 
 a {
-    color: #4c7aaf;
+    color: #000000;
     text-decoration: none;
 }
 
