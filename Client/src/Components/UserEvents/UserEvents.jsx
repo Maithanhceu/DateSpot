@@ -69,7 +69,8 @@ function UserEvents() {
                                 userId={userId}
                                 eventId={event.eventid}
                             />
-                            <DeleteEvent {userId} eventUserId={event.userid}  eventId={event.eventid} />
+                            {/* Passing props to DeleteEvent */}
+                            <DeleteEvent userId={userId} eventUserId={event.userid}  eventId={event.eventid} />
                         </>
                     )}
 

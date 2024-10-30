@@ -2,7 +2,7 @@ import { useState, useContext} from 'react';
 import { UserIdContext } from '../UserEvents/UserIdContext';
 import FetchAltText from './FetchAltText';
 import { AltTextContext } from './AltTextContext';
-import './CreateEvent.css';
+import './EventForm.css';
 
 function EventForm() {
     const { userId } = useContext(UserIdContext);
@@ -72,7 +72,7 @@ function EventForm() {
             }
 
             const updatedEvent = await response.json();
-            console.log('Event updated successfully:', updatedEvent);
+            alert('Event updated successfully:', updatedEvent);
             setIsFormVisible(false);
             setError('');
         } catch (error) {

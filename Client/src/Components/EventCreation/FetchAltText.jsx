@@ -12,19 +12,19 @@ function FetchAltText({ eventId }) {
 
         return () => clearTimeout(timer);
     }, []);
-
+    //function to fetch altText from GPT 
+    let number = eventId;
     const fetchAltText = async () => {
         try {
-            const response = await fetch(`http://localhost:1113/altText/${eventId}`);
+            const response = await fetch(`/altText/${number}`);
             if (!response.ok) {
                 throw new Error(`Error: ${response.statusText}`);
             }
 
             const data = await response.json();
             setEventAltText(data.altText);
-            console.log('Fetched alt text:', data.altText);
         } catch (err) {
-            console.log('Error fetching alt text: ' + err.message);
+            alert('Error fetching alt text: ' + err.message);
             setEventAltText('');
         }
     };
