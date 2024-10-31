@@ -23,7 +23,7 @@ function DeleteEvent({ userId, eventId, eventUserId }) {
     return (
         <>
             {userId === eventUserId && (
-                <button onClick={handleDelete} disabled={isDeleted}>
+                <button className='button-row' onClick={handleDelete} disabled={isDeleted}>
                     {isDeleted ? 'Deleted' : 'Delete Event'}
                 </button>
             )}

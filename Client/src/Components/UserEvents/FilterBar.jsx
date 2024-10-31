@@ -1,4 +1,4 @@
-import './Filter.css';
+import '../CSS/Filter.css';
 
 function FilterBar({
     data,

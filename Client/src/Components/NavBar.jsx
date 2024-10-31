@@ -27,6 +27,7 @@ function NavBar() {
     return (
         <nav className="navbar">
             <div className="nav-links"> 
+                <Link to="/"> Home Page</Link>
                 <Link to="/EventsPage">Events Page</Link>
                 <Link to="/About">About</Link>
                 <Link to="/CodeOfConduct">Code of Conduct</Link>
