@@ -1,0 +1,6 @@
+.filter-bar{
+    display: flex;
+    justify-content: column;
+    gap: 1rem;
+}
+
