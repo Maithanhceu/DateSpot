@@ -82,7 +82,7 @@ function UserEvents() {
             <div className="event-container">
                 {filteredData.map((event) => (
                     <div key={event.eventid} className="event-item">
-                       <p><bold>{event.eventtitle}</bold></p>
+                       <p><strong>{event.eventtitle}</strong></p>
                         <p>Date: {new Date(event.date).toLocaleDateString(undefined,
                             { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                         <p>Location: {event.location}</p>

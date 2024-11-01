@@ -18,5 +18,9 @@ export default defineConfig({
       '/deleteUserEvent/':{ target: proxyTarget, changeOrigin: true },
     },
   },
+  test: {
+    globals: true, 
+    environment: 'jsdom',
+},
 });
 
