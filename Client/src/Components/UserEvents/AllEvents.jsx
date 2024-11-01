@@ -1,5 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { UserIdContext } from './UserIdContext';
+import '../CSS/AllEvents.css'
 
 function AllEvents() {
     const [data, setData] = useState([]);
@@ -29,28 +30,36 @@ function AllEvents() {
             const response = await fetch(`/deleteUserEvent/${userId}/${eventId}`, {
                 method: 'DELETE',
             });
-
+    
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Error deleting user event');
             }
-
+    
             alert('User event deleted successfully.');
             fetchUserEvents(); // Refreshes the list after deletion
         } catch (error) {
             console.error('Error deleting user event:', error);
             alert("Error deleting event");
         }
-    };
+    };    
 
     return (
         <div>
             {data.map((event) => (
-                <div key={event.id}>
+                <div className="event" key={event.id}>
                     <h3>{event.eventtitle}</h3>
                     <p>Group: {event.eventgroup}</p>
                     <p>Description: {event.eventdescription}</p>
-                    <img src={event.eventphoto} alt={event.alttext || 'Event photo'} />
+                    <img src={`http://localhost:1113/photos/${event.eventphoto}`} alt={event.alttext || 'Event photo'} />
+                    <div className="location-date">
+                        <p>Date: {new Date(event.date).toLocaleDateString(undefined,
+                            { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                        <p>Location: {event.location}</p>
+                    </div>
+                    <div>
+                        <p>Event Group: {event.eventgroup}</p>
+                    </div>
                     <button onClick={() => deleteUserEvent(event.eventid)}>Delete</button>
                 </div>
             ))}

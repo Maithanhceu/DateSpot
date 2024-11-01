@@ -17,6 +17,20 @@ function EventForm() {
     const [error, setError] = useState('');
     const [isFormVisible, setIsFormVisible] = useState(true);
 
+    const eventTypes = [
+        "Bar Night", "Comedy Show", "Dance Party", 
+        "Craft Workshop", "Trivia Night", "Board Game Night", 
+        "Dinner Party", "Speed Dating", "Themed Event", "Other"
+    ];
+
+    const eventGroups = [
+        "Singles in their 20s", "Singles in their 30s", "Singles in their 40s", 
+        "Singles in their 50s", "Singles in their 60s", "Singles in their 70s", 
+        "Singles in their 80s", "Single Parents", "Parents", "Married Couples", 
+        "Queer Singles", "Asexuals and Demi-Sexuals", "Non-Monogamous People", 
+        "Open to Everyone"
+    ];
+
     // Handle photo upload
     const handlePhotoUpload = async (event) => {
         const file = event.target.files[0];
@@ -83,7 +97,7 @@ function EventForm() {
     return (
         <div>
             {isFormVisible && (
-                <form onSubmit={handleSubmitPut}>
+                <><h2>Create an Event</h2><form onSubmit={handleSubmitPut}>
                     <label htmlFor="eventTitle">Event Title:</label>
                     <input
                         id="eventTitle"
@@ -91,8 +105,7 @@ function EventForm() {
                         value={eventTitle}
                         onChange={(e) => setEventTitle(e.target.value)}
                         placeholder="Enter a Title"
-                        aria-describedby="eventTitleHint"
-                    />
+                        aria-describedby="eventTitleHint" />
                     <span id="eventTitleHint" className="visually-hidden">Please provide a title for your event.</span>
 
                     <label htmlFor="photoUpload">Upload Photo:</label>
@@ -100,8 +113,7 @@ function EventForm() {
                         id="photoUpload"
                         type="file"
                         onChange={handlePhotoUpload}
-                        aria-describedby="photoUploadHint"
-                    />
+                        aria-describedby="photoUploadHint" />
                     <span id="photoUploadHint" className="visually-hidden">Select a photo to upload for the event.</span>
 
                     <FetchAltText eventId={eventId} />
@@ -112,8 +124,7 @@ function EventForm() {
                         value={eventDescription}
                         onChange={(e) => setEventDescription(e.target.value)}
                         placeholder="Please enter a description of the Event"
-                        aria-describedby="descriptionHint"
-                    />
+                        aria-describedby="descriptionHint" />
                     <span id="descriptionHint" className="visually-hidden">Describe the event in detail.</span>
                     <div className='form-location-date'>
                         <label htmlFor="eventDate">Event Date:</label>
@@ -122,8 +133,7 @@ function EventForm() {
                             type="date"
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
-                            aria-describedby="dateHint"
-                        />
+                            aria-describedby="dateHint" />
                         <span id="dateHint" className="visually-hidden">Select the date for the event.</span>
 
                         <label htmlFor="eventLocation">Location:</label>
@@ -133,8 +143,7 @@ function EventForm() {
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
                             placeholder='Please enter a location'
-                            aria-describedby="locationHint"
-                        />
+                            aria-describedby="locationHint" />
                         <span id="locationHint" className="visually-hidden">Specify the location of the event.</span>
                     </div>
                     <label htmlFor="eventType">Event Type:</label>
@@ -145,8 +154,7 @@ function EventForm() {
                         aria-describedby="eventTypeHint"
                     >
                         <option value="">Select an event type</option>
-                        <option value="comedy">Comedy Show</option>
-                        <option value="music">Music Event</option>
+                        {eventTypes.map(type => <option key={type} value={type}>{type}</option>)}
                     </select>
                     <span id="eventTypeHint" className="visually-hidden">Choose the type of event.</span>
 
@@ -158,13 +166,12 @@ function EventForm() {
                         aria-describedby="eventGroupHint"
                     >
                         <option value="">Select a group</option>
-                        <option value="parents">Parents</option>
-                        <option value="students">Students</option>
+                        {eventTypes.map(type => <option key={type} value={type}>{type}</option>)}
                     </select>
                     <span id="eventGroupHint" className="visually-hidden">Select the group associated with the event.</span>
 
-                    <button type="submit">Update Event</button>
-                </form>
+                    <button type="submit">Create Event</button>
+                </form></>
             )}
         </div>
     );

@@ -50,6 +50,26 @@
     background-color: #f4f6f81c;
 }
 
+.dropdown-menu {
+    display: block;
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    margin-top: 10px; 
+}
+
+.dropdown-item {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #000; 
+}
+
+.dropdown-item:hover {
+    background-color: #f0f0f0; 
+}
+
 @font-face {
     font-family: 'Neue Machina';
     src: url('../CSS/Font/NeueMachina-Regular.otf') format('opentype');

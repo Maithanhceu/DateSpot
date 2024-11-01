@@ -6,16 +6,18 @@
 }
 
 .article-container {
-    background: rgb(209, 105, 195);
-    border-radius: 8px;
-    padding: 15px;
+    background: rgb(241, 235, 241);
+    border-radius: 20px;
+    padding: 2rem;
     margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow:  0px 4px 25px #320a47;
 }
 
 .article-image {
     width: 100%;
     height: auto;
+    border-color: #320a47;
+    border-style: solid;
     border-radius: 4px;
 }
 
@@ -25,7 +27,7 @@ p {
 }
 
 a {
-    color: #000000;
+    color: #1d77c5;
     text-decoration: none;
 }
 

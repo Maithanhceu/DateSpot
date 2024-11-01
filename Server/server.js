@@ -230,32 +230,6 @@ app.post('/newUser', async (request, response) => {
     }
 });
 
-
-app.put('/updateUser/:userId', async (request, response) => {
-    const userId = request.params.userId;
-    const { username, password, firstname, lastname, email } = request.body;
-
-    if (!username || !password || !firstname || !lastname || !email) {
-        return response.status(400).json({ error: "Please provide all necessary fields." });
-    }
-
-    try {
-        const result = await pool.query(
-            'UPDATE users SET username = $1, password = $2, firstname = $3, lastname = $4, email = $5 WHERE userId = $6 RETURNING *',
-            [username, password, firstname, lastname, email, userId]
-        );
-
-        if (result.rowCount === 0) {
-            return response.status(404).json({ error: "User not found." });
-        }
-
-        response.status(200).json(result.rows[0]);
-    } catch (error) {
-        console.error('Error executing query', error);
-        response.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
 app.delete('/deleteUser/:userId', async (request, response) => {
     const userId = request.params.userId;
 
@@ -405,12 +379,13 @@ app.post('/register', async (request, response) => {
 
 
 app.delete('/deleteUserEvent/:userId/:eventId', async (request, response) => {
-    const eventId = request.params.eventId;
+    const { userId, eventId } = request.params;
+
 
     try {
         const result = await pool.query(
-            'DELETE FROM UserEvents WHERE eventId = $1 RETURNING *',
-            [userEventId]
+            'DELETE FROM UserEvents WHERE eventId = $1 AND userId = $2 RETURNING *',
+            [eventId, userId] 
         );
 
         if (result.rowCount === 0) {
