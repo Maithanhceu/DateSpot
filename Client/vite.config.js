@@ -22,6 +22,13 @@ export default defineConfig({
       '/deleteUserEvent/':{ target:'https://datespot-production.up.railway.app', changeOrigin: true },
     },
   },
+<<<<<<< HEAD
 >>>>>>> 507d4e2 (deleted an extra db.sql)
+=======
+  test: {
+    globals: true, 
+    environment: 'jsdom',
+},
+>>>>>>> 2905f34 (feat(tests): Add JSDOM tests for rendering events and user registrations)
 });
 
