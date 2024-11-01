@@ -1,3 +1,10 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --hanken-grotesk-weight: normal;
+}
+
+.hanken-grotesk {
+  font-family: "Hanken Grotesk", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: var(--hanken-grotesk-weight);
+  font-style: normal;
 }
