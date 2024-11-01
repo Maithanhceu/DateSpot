@@ -322,7 +322,6 @@ app.get('/userEventsTable/:userId', async (request, response) => {
     }
 });
 
-
 app.post('/register', async (request, response) => {
     const { userId, eventId } = request.body;
 
