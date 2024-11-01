@@ -13,7 +13,7 @@ export default defineConfig({
       '/register': { target: proxyTarget, changeOrigin: true },
       '/altText': { target: proxyTarget, changeOrigin: true },
       '/deleteEvent':{ target: proxyTarget, changeOrigin: true },
-      '/editEvents/':{ target: proxyTarget, changeOrigin: true },
+      '/editEvents':{ target: proxyTarget, changeOrigin: true },
       '/userEventsTable/':{ target: proxyTarget, changeOrigin: true },
       '/deleteUserEvent/':{ target: proxyTarget, changeOrigin: true },
     },
