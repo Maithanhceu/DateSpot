@@ -8,13 +8,20 @@
 
 .about-bio {
     flex: 1;
+    background-color: aliceblue;
+    border-radius: 8px;
+    padding: 2.5rem;
     max-width: 600px; 
+    font-family:  "Hanken Grotesk";
+    font-size: large;
+    border-color: #320a47;
+    border-style: solid;
 }
 
 .image-wrapper {
     flex: 1;
-    justify-content: space-evenly; 
     padding-left: 3.5rem;
+    justify-items: center;
     border-radius: 15px; 
     overflow: hidden; 
     max-width: 600px; 
@@ -24,12 +31,19 @@
 .about-info img {
     width: 85%; 
     height: auto; 
-  
-   
 }
 
 .headshot {
     border-radius: 15px; 
-    border-color: rgb(79, 79, 184);
+    border-color: #320a47;
+    border-style: solid;
+}
+
+.alt-text{
+    background-color: aliceblue;
+    padding: 2rem;
+    width: auto;
+    border-radius: 15px; 
+    border-color: #320a47;
     border-style: solid;
 }

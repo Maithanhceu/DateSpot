@@ -61,25 +61,6 @@ textarea {
     min-height: 100px;
 }
 
-button {
-    background-color: #4c7aaf;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 50%;
-    align-self: flex-start;
-}
-
-button:hover {
-    background-color: #3f6a91;
-}
-
 .visually-hidden {
     position: absolute;
     width: 1px;

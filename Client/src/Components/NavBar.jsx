@@ -26,6 +26,10 @@ function NavBar() {
 
     return (
         <nav className="navbar">
+            <div className="logo">
+                Date Spot <br/>
+                The Third Place for Dating 
+            </div>
             <div className="nav-links"> 
                 <Link to="/"> Home Page</Link>
                 <Link to="/EventsPage">Events Page</Link>
@@ -33,9 +37,9 @@ function NavBar() {
                 <Link to="/CodeOfConduct">Code of Conduct</Link>
                 <Profile userId={userId} />
                 {!isAuthenticated ? (
-                    <LoginButton />
+                    <LoginButton/>
                 ) : (
-                    <LogOutButton />
+                    <LogOutButton/>
                 )}
             </div>
         </nav>
