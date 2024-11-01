@@ -55,6 +55,3 @@ describe('EventForm Component', () => {
         expect(screen.getByLabelText(/event group/i).value).toBe('Singles in their 20s');
     });
 });
-
-
-

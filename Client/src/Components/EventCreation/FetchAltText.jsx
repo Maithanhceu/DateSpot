@@ -17,11 +17,7 @@ function FetchAltText({ eventId }) {
     let number = eventId;
     const fetchAltText = async () => {
         try {
-<<<<<<< HEAD
-            const response = await fetch(`http://localhost:1113/altText/${number}`);
-=======
             const response = await fetch(`https://datespot-production.up.railway.app/userEventsTable/altText/${number}`);
->>>>>>> 7a0b108 (Modified endpoints in components and vite.config.js to point to the Railway URL)
             if (!response.ok) {
                 throw new Error(`Error: ${response.statusText}`);
             }
