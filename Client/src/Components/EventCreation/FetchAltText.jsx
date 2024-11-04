@@ -8,16 +8,16 @@ function FetchAltText({ eventId }) {
     useEffect(() => {
         const timer = setTimeout(() => {
             setShowButton(true);
-        }, 10000);
+        }, 12000);
 
         return () => clearTimeout(timer);
     }, []);
     
     //function to fetch altText from GPT 
-    // let number = eventId;
+    let number = eventId;
     const fetchAltText = async () => {
         try {
-            const response = await fetch(`/altText/${eventId}`);
+            const response = await fetch(`/altText/${number}`);
             if (!response.ok) {
                 throw new Error(`Error: ${response.statusText}`);
             }
