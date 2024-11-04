@@ -401,3 +401,5 @@ app.delete('/deleteUserEvent/:userId/:eventId', async (request, response) => {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+module.exports = { app }; // Ensure the app is exported for testing purposes
