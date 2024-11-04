@@ -398,8 +398,10 @@ app.delete('/deleteUserEvent/:userId/:eventId', async (request, response) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
-module.exports = { app }; // Ensure the app is exported for testing purposes
+if (process.env.NODE_ENV !== 'test') {
+    // Only start the server if not in test environment
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}
+module.exports = app; // Ensure the app is exported for testing purposes
