@@ -1,26 +1,25 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-const proxyTarget = 'http://localhost:1113';
-
 export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/news/romance': { target: proxyTarget, changeOrigin: true },
-      '/uploadPhoto': { target: proxyTarget, changeOrigin: true },
-      '/events': { target: proxyTarget, changeOrigin: true },
-      '/register': { target: proxyTarget, changeOrigin: true },
-      '/altText': { target: proxyTarget, changeOrigin: true },
-      '/deleteEvent':{ target: proxyTarget, changeOrigin: true },
-      '/editEvents':{ target: proxyTarget, changeOrigin: true },
-      '/userEventsTable/':{ target: proxyTarget, changeOrigin: true },
-      '/deleteUserEvent/':{ target: proxyTarget, changeOrigin: true },
+      '/news/romance': { target: 'http://localhost:1113', changeOrigin: true },
+      '/uploadPhoto': { target: 'http://localhost:1113', changeOrigin: true },
+      '/events': { target: 'http://localhost:1113', changeOrigin: true },
+      '/register': { target: 'http://localhost:1113', changeOrigin: true },
+      '/altText': { target: 'http://localhost:1113', changeOrigin: true },
+      '/deleteEvent': { target: 'http://localhost:1113', changeOrigin: true },
+      '/editEvents': { target: 'http://localhost:1113', changeOrigin: true },
+      '/userEventsTable': { target: 'http://localhost:1113', changeOrigin: true },
+      '/deleteUserEvent': { target: 'http://localhost:1113', changeOrigin: true },
     },
   },
   test: {
-    globals: true, 
+    globals: true,
     environment: 'jsdom',
-},
+  },
 });
+
 
