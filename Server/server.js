@@ -7,7 +7,7 @@ import axios from 'axios';
 import fs from 'fs';
 import multer from 'multer';
 import path from 'path';
-import OpenAI from 'openai';
+import {OpenAI} from 'openai';
 import { ImageAnnotatorClient } from '@google-cloud/vision';
 
 const { Pool } = pkg;
