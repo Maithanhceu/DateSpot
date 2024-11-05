@@ -91,56 +91,58 @@ describe('Events API', () => {
         });
     });
 
-    describe('Updating an event in the Events Table', () => {
-        it('should update an event and return the updated data', async () => {
-            const userId = 1;  
-            const eventId = 1; 
-            
+
+    describe('PUT /editEvents/:eventId', () => {
+        afterEach(() => {
+            jest.clearAllMocks(); 
+        });
+    
+        it('should return 200 and the updated event data on successful update', async () => {
+            const eventId = '1'; 
             const updatedEventData = {
-                eventId: eventId,
-                userId: userId,
-                eventTitle: 'Updated Event Title',
+                userId: 'user123',
                 date: '2024-12-01',
                 location: 'Updated Location',
                 eventType: 'Updated Type',
                 eventDescription: 'Updated Description',
-                eventPhoto: 'http://example.com/updated-photo.jpg',
+                eventTitle: 'Updated Event Title',
                 eventAltText: 'Updated photo alt text',
                 eventGroup: 'Updated Group',
             };
     
-            // Mock the successful response of pool.query for updating an event
-            pool.query.mockResolvedValue({ rows: [updatedEventData] });
+            // Mock successful database response
+            pool.query.mockResolvedValueOnce({ rowCount: 1 }); 
+            pool.query.mockResolvedValueOnce({ rows: [updatedEventData] }); 
     
-            // Send the PUT request to the endpoint
             const response = await request(app)
-                .put(`/editEvents/${userId}/${eventId}`)
+                .put(`/editEvents/${eventId}`)
                 .send(updatedEventData);
     
-            // Expecting a successful 200 OK response
-            expect(response.status).toBe(200);
-            expect(response.body).toEqual(updatedEventData);
+            expect(response.status).toBe(200); 
+            expect(response.body).toEqual(updatedEventData); 
         });
     
-        it('should return a 500 error if the database query fails', async () => {
-            const userId = 1;  // replace with valid userId if needed
-            const eventId = 1; // replace with valid eventId if needed
+        it('should return 500 if there is an internal server error', async () => {
+            const eventId = '1'; 
     
-            // Mock pool.query to reject with an error
-            pool.query.mockRejectedValue(new Error('Database error'));
+            // Mock the database query to throw an error
+            pool.query.mockRejectedValueOnce(new Error('Database error'));
     
-            // Send the PUT request to the endpoint
             const response = await request(app)
-                .put(`/editEvents/${userId}/${eventId}`)
+                .put(`/editEvents/${eventId}`)
                 .send({
-                    eventTitle: 'Error Test Event', 
-                    date: '2024-12-01', 
-                    location: 'Error Location'
+                    userId: 'user123',
+                    date: '2024-12-01',
+                    location: 'Updated Location',
+                    eventType: 'Updated Type',
+                    eventDescription: 'Updated Description',
+                    eventTitle: 'Updated Event Title',
+                    eventAltText: 'Updated photo alt text',
+                    eventGroup: 'Updated Group',
                 });
     
-            // Expecting a 500 Internal Server Error response
-            expect(response.status).toBe(500);
-            expect(response.body).toEqual({ error: 'Internal Server Error' });
+            expect(response.status).toBe(500); 
+            expect(response.body).toEqual({ message: 'Internal server error' }); 
         });
     });
 });
