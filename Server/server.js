@@ -262,28 +262,6 @@ app.get('/events', async (request, response) => {
     }
 });
 
-app.put('/editEvents/:userId/:eventId', async (request, response) => {
-    const userId = request.params.userId;
-    const eventId = request.params.eventId;
-    const { date, location, eventType, eventDescription, eventTitle, eventPhoto, eventGroup } = request.body;
-
-    try {
-        const result = await pool.query(
-            'UPDATE events SET date = $1, location = $2, eventType = $3, eventDescription = $4, eventTitle = $5, eventPhoto = $6, eventGroup =$7 WHERE eventId = $8 AND userId = $9 RETURNING *',
-            [date, location, eventType, eventDescription, eventTitle, eventPhoto, eventGroup, eventId, userId]
-        );
-
-        if (result.rowCount === 0) {
-            return response.status(404).json({ error: 'Event not found or you do not have permission to edit this event.' });
-        }
-
-        response.status(200).json(result.rows[0]);
-    } catch (error) {
-        console.error('Error executing query', error);
-        response.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
 app.delete('/deleteEvent/:userId/:eventId', async (request, response) => {
     const { userId, eventId } = request.params;
 
@@ -305,8 +283,6 @@ app.delete('/deleteEvent/:userId/:eventId', async (request, response) => {
         response.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
-
 
 // -------------------------------------------------------------------------------------------------
 //User Events Table 
@@ -375,7 +351,6 @@ app.post('/register', async (request, response) => {
         response.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
 });
-
 
 app.delete('/deleteUserEvent/:userId/:eventId', async (request, response) => {
     const { userId, eventId } = request.params;
