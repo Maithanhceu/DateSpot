@@ -11,7 +11,7 @@ export default defineConfig({
 =======
   server: {
     proxy: {
-      '/news/romance': { target: 'datespot-production.up.railway.app', changeOrigin: true },
+      '/news/romance': { target: 'https://datespot-production.up.railway.app', changeOrigin: true },
       '/uploadPhoto': { target: 'datespot-production.up.railway.app', changeOrigin: true },
       '/events': { target: 'datespot-production.up.railway.app', changeOrigin: true },
       '/register': { target: 'datespot-production.up.railway.app', changeOrigin: true },
