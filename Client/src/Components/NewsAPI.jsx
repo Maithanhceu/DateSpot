@@ -7,7 +7,7 @@ function NewsAPI() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('/news/romance');
+                const response = await fetch('https://datespot-production.up.railway.app/news/romance');
                 const result = await response.json();
                 setNewData(result);
             } catch (error) {
