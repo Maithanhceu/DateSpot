@@ -88,7 +88,7 @@ function UserEvents() {
                         <p>Location: {event.location}</p>
                         <p>Description: {event.eventdescription}</p>
                         <img
-                            src={`http://localhost:1113/photos/${event.eventphoto}`}
+                            src={`${event.eventphoto}`}
                             alt={event.eventalttext}
                         />
                         <p>Event Type: {event.eventtype}</p>

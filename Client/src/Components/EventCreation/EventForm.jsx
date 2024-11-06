@@ -166,7 +166,7 @@ function EventForm() {
                         aria-describedby="eventGroupHint"
                     >
                         <option value="">Select a group</option>
-                        {eventTypes.map(type => <option key={type} value={type}>{type}</option>)}
+                        {eventGroups.map(type => <option key={type} value={type}>{type}</option>)}
                     </select>
                     <span id="eventGroupHint" className="visually-hidden">Select the group associated with the event.</span>
 

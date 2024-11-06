@@ -51,7 +51,7 @@ function AllEvents() {
                     <h3>{event.eventtitle}</h3>
                     <p>Group: {event.eventgroup}</p>
                     <p>Description: {event.eventdescription}</p>
-                    <img src={`http://localhost:1113/photos/${event.eventphoto}`} alt={event.alttext || 'Event photo'} />
+                    <img src={`${event.eventphoto}`} alt={event.alttext || 'Event photo'} />
                     <div className="location-date">
                         <p>Date: {new Date(event.date).toLocaleDateString(undefined,
                             { year: 'numeric', month: 'long', day: 'numeric' })}</p>
