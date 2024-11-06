@@ -16,7 +16,7 @@ function FetchAltText({ eventId }) {
     let number = eventId;
     const fetchAltText = async () => {
         try {
-            const response = await fetch(`/altText/${number}`);
+            const response = await fetch(`https://datespot-production.up.railway.app/userEventsTable/altText/${number}`);
             if (!response.ok) {
                 throw new Error(`Error: ${response.statusText}`);
             }
