@@ -24,7 +24,6 @@ const pool = new Pool({
     password: process.env.DB_PASSWORD, 
     port: process.env.DB_PORT || 5432, 
 });
-
 // -------------------------------------------------------------------------------------------------
 //OPEN AI end-point 
 const openai = new OpenAI({
@@ -255,7 +254,7 @@ app.delete('/deleteUser/:userId', async (request, response) => {
 //Events Table 
 app.get('/events', async (request, response) => {
     try {
-        const result = await pool.query('SELECT * FROM events');
+        const result = await pool.query('SELECT * FROM public.events');
         response.json(result.rows);
     } catch (error) {
         console.error('Error executing query', error);
