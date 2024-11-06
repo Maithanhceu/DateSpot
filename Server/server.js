@@ -1,7 +1,9 @@
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
 import pkg from 'pg';
+import { fileURLToPath } from 'url';
 import cors from 'cors';
 import axios from 'axios';
 import fs from 'fs';
@@ -22,6 +24,14 @@ const pool = new Pool({
     host: 'localhost',
     database: 'date_spot',
     port: 5432,
+});
+
+const s3Client = new S3Client({
+    region: process.env.AWS_REGION,
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    }
 });
 
 // -------------------------------------------------------------------------------------------------
@@ -72,38 +82,73 @@ app.get('/altText/:eventId', async (request, response) => {
 // -------------------------------------------------------------------------------------------------
 // A POST Request to Google Vision 
 
-const __dirname = path.resolve(); // Get the current directory path
-// Create the Photos directory if it doesn't exist
-const photosPath = path.join(__dirname, 'Photos');
-if (!fs.existsSync(photosPath)) {
-    fs.mkdirSync(photosPath);
-}
-
 // Multer storage configuration
-const storage = multer.diskStorage({
-    destination: (request, file, cb) => {
-        cb(null, photosPath);
-    },
-    filename: (request, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
+const upload = multer({
+    dest: 'uploads/',
 });
-const upload = multer({ storage: storage });
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Google Vision API client setup
 const visionClient = new ImageAnnotatorClient({
     keyFilename: path.join(__dirname, 'autopopulate.json'),
 });
 
-//POST For NEW EVENTS 
+// POST route for uploading photo
 app.post('/uploadPhoto', upload.single('file'), async (request, response) => {
-    const filePath = path.join(photosPath, request.file.filename);
-    console.log('File saved at:', filePath);
+    const file = request.file;
+    const localFilePath = path.join(__dirname, 'uploads', file.filename);
+    const fileName = path.basename(file.originalname);
+    
+    // Extract file extension
+    const fileExtension = path.extname(fileName).toLowerCase();
+
+    // Set the correct content type based on file extension
+    let contentType;
+    switch (fileExtension) {
+        case '.jpg':
+        case '.jpeg':
+            contentType = 'image/jpeg';
+            break;
+        case '.png':
+            contentType = 'image/png';
+            break;
+        case '.gif':
+            contentType = 'image/gif';
+            break;
+        case '.pdf':
+            contentType = 'application/pdf';
+            break;
+        case '.txt':
+            contentType = 'text/plain';
+            break;
+        default:
+            contentType = 'application/octet-stream';  
+            break;
+    }
 
     try {
+        const uploadParams = {
+            Bucket: process.env.AWS_S3_BUCKET_NAME,
+            Key: `uploads/${fileName}`, // Set the file name in the S3 bucket
+            Body: fs.createReadStream(localFilePath),
+            ContentType: contentType,
+        };
+
+        // Create the S3 PutObject command
+        const command = new PutObjectCommand(uploadParams);
+
+        // Upload the file to S3
+        const s3Response = await s3Client.send(command);
+
+        console.log('File uploaded to S3 successfully:', s3Response);
+
         // Analyze the uploaded image with Google Vision
-        const [visionResult] = await visionClient.labelDetection(filePath);
+        const [visionResult] = await visionClient.labelDetection(localFilePath);
         const labels = visionResult.labelAnnotations;
 
-        // Process the labels if they exist
+        // If labels are detected, process them
         if (labels && labels.length > 0) {
             const labelsList = labels.map(label => ({
                 description: label.description,
@@ -111,25 +156,15 @@ app.post('/uploadPhoto', upload.single('file'), async (request, response) => {
 
             const labelsDescriptions = labelsList.map(label => label.description).join(', ');
 
-            // Create a JSON object with file name and labels
-            const jsonLabel = {
-                fileName: request.file.filename,
-                labels: labelsList,
-            };
-
-            // Save the JSON data to a file
-            const jsonFilePath = path.join(photosPath, `${request.file.filename}.json`);
-            fs.writeFileSync(jsonFilePath, JSON.stringify(jsonLabel, null, 2));
-
-            const eventPhoto = `/${request.file.filename}`
+            // Insert event into your database with S3 file URL and labels
+            const fileUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/uploads/${fileName}`;
             const eventResult = await pool.query(
                 'INSERT INTO events (eventPhoto, eventDescription) VALUES ($1, $2) RETURNING *',
-                [eventPhoto, labelsDescriptions]
+                [fileUrl, labelsDescriptions]
             );
 
             // Return the created event
             return response.status(201).json(eventResult.rows[0]);
-
         } else {
             return response.status(200).json({
                 message: 'File uploaded, but no labels were detected.',
@@ -139,9 +174,13 @@ app.post('/uploadPhoto', upload.single('file'), async (request, response) => {
     } catch (error) {
         console.error('Error processing upload:', error);
         return response.status(500).json({ error: 'Error processing the upload.' });
+    } finally {
+        // Clean up the local file after processing
+        if (fs.existsSync(localFilePath)) {
+            fs.unlinkSync(localFilePath);
+        }
     }
 });
-app.use('/photos', express.static(path.join(__dirname, 'Photos')));
 
 app.put('/editEvents/:eventId', async (req, res) => {
     const { eventId } = req.params;
@@ -192,7 +231,7 @@ app.get('/checkUser/:userId', async (req, res) => {
 
     try {
         const result = await pool.query('SELECT EXISTS(SELECT 1 FROM users WHERE user_id = $1)', [userId]);
-        const exists = result.rows[0].exists; 
+        const exists = result.rows[0].exists;
         res.json({ exists });
     } catch (error) {
         console.error('Error checking user existence:', error);
@@ -299,7 +338,7 @@ app.delete('/deleteEvent/:userId/:eventId', async (request, response) => {
             return response.status(404).json({ error: 'Event not found or you do not have permission to delete this event.' });
         }
 
-        response.status(204).send(); 
+        response.status(204).send();
     } catch (error) {
         console.error('Error executing query', error);
         response.status(500).json({ error: 'Internal Server Error' });
@@ -311,7 +350,7 @@ app.delete('/deleteEvent/:userId/:eventId', async (request, response) => {
 // -------------------------------------------------------------------------------------------------
 //User Events Table 
 app.get('/userEventsTable/:userId', async (request, response) => {
-    const userId = request.params.userId; 
+    const userId = request.params.userId;
 
     try {
         const result = await pool.query('SELECT * FROM userevents WHERE userId = $1', [userId]);
@@ -385,7 +424,7 @@ app.delete('/deleteUserEvent/:userId/:eventId', async (request, response) => {
     try {
         const result = await pool.query(
             'DELETE FROM UserEvents WHERE eventId = $1 AND userId = $2 RETURNING *',
-            [eventId, userId] 
+            [eventId, userId]
         );
 
         if (result.rowCount === 0) {
