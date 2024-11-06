@@ -254,7 +254,7 @@ app.delete('/deleteUser/:userId', async (request, response) => {
 //Events Table 
 app.get('/events', async (request, response) => {
     try {
-        const result = await pool.query('SELECT * FROM public.events');
+        const result = await pool.query('SELECT * FROM events');
         response.json(result.rows);
     } catch (error) {
         console.error('Error executing query', error);
