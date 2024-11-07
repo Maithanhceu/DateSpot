@@ -32,7 +32,7 @@ function EditEvents({ date, location, eventType, eventDescription, eventTitle, e
                 eventGroup: currentEventGroup,
             };
 
-            const response = await fetch(`/editEvents/${userId}/${eventId}`, {
+            const response = await fetch(`https://datespot-production.up.railway.app/editEvents/${userId}/${eventId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

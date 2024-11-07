@@ -12,14 +12,14 @@ export default defineConfig({
   server: {
     proxy: {
       '/news/romance': { target: 'https://datespot-production.up.railway.app', changeOrigin: true },
-      '/uploadPhoto': { target: 'datespot-production.up.railway.app', changeOrigin: true },
-      '/events': { target: 'datespot-production.up.railway.app', changeOrigin: true },
-      '/register': { target: 'datespot-production.up.railway.app', changeOrigin: true },
-      '/altText': { target: 'datespot-production.up.railway.app', changeOrigin: true },
-      '/deleteEvent':{ target: 'datespot-production.up.railway.app', changeOrigin: true },
-      '/editEvents/':{ target: 'datespot-production.up.railway.app', changeOrigin: true },
-      '/userEventsTable/':{ target: 'datespot-production.up.railway.app', changeOrigin: true },
-      '/deleteUserEvent/':{ target: 'datespot-production.up.railway.app', changeOrigin: true },
+      '/uploadPhoto': { target:'https://datespot-production.up.railway.app', changeOrigin: true },
+      '/events': { target: 'https://datespot-production.up.railway.app', changeOrigin: true },
+      '/register': { target: 'https://datespot-production.up.railway.app', changeOrigin: true },
+      '/altText': { target: 'https://datespot-production.up.railway.app', changeOrigin: true },
+      '/deleteEvent':{ target: 'https://datespot-production.up.railway.app', changeOrigin: true },
+      '/editEvents/':{ target: 'https://datespot-production.up.railway.app', changeOrigin: true },
+      '/userEventsTable/':{ target: 'https://datespot-production.up.railway.app', changeOrigin: true },
+      '/deleteUserEvent/':{ target:'https://datespot-production.up.railway.app', changeOrigin: true },
     },
   },
 >>>>>>> 507d4e2 (deleted an extra db.sql)
