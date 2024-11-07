@@ -98,10 +98,7 @@ const visionClient = new ImageAnnotatorClient({
 // POST route for uploading photo
 app.post('/uploadPhoto', upload.single('file'), async (request, response) => {
     const file = request.file;
-    const localFilePath = path.join(__dirname, 'uploads', file.filename);
-    const fileName = path.basename(file.originalname);
-    
-    // Extract file extension
+    const fileName = `${Date.now()}-${file.originalname}`;
     const fileExtension = path.extname(fileName).toLowerCase();
 
     // Set the correct content type based on file extension
@@ -124,61 +121,44 @@ app.post('/uploadPhoto', upload.single('file'), async (request, response) => {
             contentType = 'text/plain';
             break;
         default:
-            contentType = 'application/octet-stream';  
+            contentType = 'application/octet-stream';
             break;
     }
 
     try {
         const uploadParams = {
             Bucket: process.env.AWS_S3_BUCKET_NAME,
-            Key: `uploads/${fileName}`, // Set the file name in the S3 bucket
-            Body: fs.createReadStream(localFilePath),
+            Key: `uploads/${fileName}`,
+            Body: file.buffer, // Use file buffer directly
             ContentType: contentType,
         };
 
-        // Create the S3 PutObject command
+        // Upload the file directly to S3
         const command = new PutObjectCommand(uploadParams);
-
-        // Upload the file to S3
         const s3Response = await s3Client.send(command);
-
         console.log('File uploaded to S3 successfully:', s3Response);
 
         // Analyze the uploaded image with Google Vision
-        const [visionResult] = await visionClient.labelDetection(localFilePath);
+        const [visionResult] = await visionClient.labelDetection(file.buffer);
         const labels = visionResult.labelAnnotations;
 
         // If labels are detected, process them
-        if (labels && labels.length > 0) {
-            const labelsList = labels.map(label => ({
-                description: label.description,
-            }));
+        const labelsDescriptions = labels && labels.length > 0 
+            ? labels.map(label => label.description).join(', ')
+            : '';
 
-            const labelsDescriptions = labelsList.map(label => label.description).join(', ');
+        // Insert event into your database with S3 file URL and labels
+        const fileUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/uploads/${fileName}`;
+        const eventResult = await pool.query(
+            'INSERT INTO events (eventPhoto, eventDescription) VALUES ($1, $2) RETURNING *',
+            [fileUrl, labelsDescriptions]
+        );
 
-            // Insert event into your database with S3 file URL and labels
-            const fileUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/uploads/${fileName}`;
-            const eventResult = await pool.query(
-                'INSERT INTO events (eventPhoto, eventDescription) VALUES ($1, $2) RETURNING *',
-                [fileUrl, labelsDescriptions]
-            );
-
-            // Return the created event
-            return response.status(201).json(eventResult.rows[0]);
-        } else {
-            return response.status(200).json({
-                message: 'File uploaded, but no labels were detected.',
-                labels: [],
-            });
-        }
+        // Return the created event
+        return response.status(201).json(eventResult.rows[0]);
     } catch (error) {
         console.error('Error processing upload:', error);
         return response.status(500).json({ error: 'Error processing the upload.' });
-    } finally {
-        // Clean up the local file after processing
-        if (fs.existsSync(localFilePath)) {
-            fs.unlinkSync(localFilePath);
-        }
     }
 });
 
