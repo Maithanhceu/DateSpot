@@ -400,6 +400,7 @@ app.delete('/deleteUserEvent/:userId/:eventId', async (request, response) => {
         const result = await pool.query(
             'DELETE FROM UserEvents WHERE eventId = $1 AND userId = $2 RETURNING *',
             [eventId, userId]
+
         );
 
         if (result.rowCount === 0) {

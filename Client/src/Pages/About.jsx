@@ -1,3 +1,4 @@
+
 import Mai_headshot from '../Photo/Mai_headshot.jpeg';
 import './CSS/About.css';
 
@@ -37,5 +38,6 @@ export default function About() {
                 </div>
             </div>
         </>
+
     );
 }

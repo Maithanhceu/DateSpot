@@ -38,6 +38,7 @@ CREATE TABLE public.events (
     eventphoto character varying(255),
     eventalttext character varying(255),
     eventgroup character varying(255)
+
 );
 
 
@@ -85,6 +86,7 @@ CREATE TABLE public.userevents (
     eventphoto character varying(255),
     eventalttext character varying(255),
     eventgroup character varying(255)
+
 );
 
 
@@ -153,6 +155,7 @@ COPY public.events (eventid, userid, date, location, eventtype, eventdescription
 82	2	\N	\N	\N	Smile, Entertainment, Thigh, Performing arts, Dance, Fun, Event, Stage equipment, Performance art, Dancer	\N	/1729911551456.jpg	\N	\N
 80	google-oauth2|114492981803626744328	2024-10-31						A dancer entertained the audience with a fun and energetic performance, showcasing their skills on stage using various stage equipment, including their lively smile and dynamic thigh movements.	
 90	google-oauth2|114492981803626744328	2024-10-31	Oakland, California 	music	Come Out to a fun filled day, where you are able to drink-wine and enjoy a lovely evening with other singles. 	Painting and Staring into each other's eyes 	/1730308696810.jpg	An artist showcasing paintings and fashion designs at a visual arts event, with a focus on smiling and incorporating jewellery and turbans into the ensemble.	students
+
 \.
 
 
@@ -165,6 +168,7 @@ COPY public.events (eventid, userid, date, location, eventtype, eventdescription
 COPY public.userevents (usereventid, userid, eventid, date, location, eventtype, eventdescription, eventtitle, eventphoto, eventalttext, eventgroup) FROM stdin;
 5	google-oauth2|114492981803626744328	80	2024-10-31	Brooklyn, NYC	music	It's a party in the USA -- party like it's the early 2000's. 	Party in the USA 	/1729906060874.jpg	A dancer entertained the audience with a fun and energetic performance, showcasing their skills on stage using various stage equipment, including their lively smile and dynamic thigh movements.	students
 6	google-oauth2|114492981803626744328	82	\N	\N	\N	Smile, Entertainment, Thigh, Performing arts, Dance, Fun, Event, Stage equipment, Performance art, Dancer	\N	/1729911551456.jpg	\N	\N
+
 \.
 
 

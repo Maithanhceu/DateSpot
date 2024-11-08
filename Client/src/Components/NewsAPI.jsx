@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import './CSS/NewsAPI.css'
 
+
 function NewsAPI() {
     const [newsData, setNewData] = useState({});
     // Function to fetch newsData 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_URL}/news/romance`);
+              const URL = import.meta.env.VITE_URL
+                const response = await fetch(`${URL}/news/romance`);
                 const result = await response.json();
                 setNewData(result);
             } catch (error) {
@@ -18,6 +20,7 @@ function NewsAPI() {
     }, []);
     
     return (
+
         <div className='news-api-container'>
             <h2>News Articles</h2>
             {newsData.length > 0 ? (
