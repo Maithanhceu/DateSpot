@@ -13,7 +13,7 @@ function AllEvents() {
     // Fetches all events for the user
     const fetchUserEvents = async () => {
         try {
-            const response = await fetch(`https://datespot-production.up.railway.app/userEventsTable/${userId}`);
+            const response = await fetch(`${import.meta.env.VITE_URL}/userEventsTable/${userId}`);
             if (!response.ok) throw new Error('Failed to fetch user events');
 
             const result = await response.json();
@@ -27,7 +27,7 @@ function AllEvents() {
     // Deletes a user event by eventId
     const deleteUserEvent = async (eventId) => {
         try {
-            const response = await fetch(`https://datespot-production.up.railway.app/deleteUserEvent/${userId}/${eventId}`, {
+            const response = await fetch(`${import.meta.env.VITE_URL}/deleteUserEvent/${userId}/${eventId}`, {
                 method: 'DELETE',
             });
     
@@ -51,7 +51,7 @@ function AllEvents() {
                     <h3>{event.eventtitle}</h3>
                     <p>Group: {event.eventgroup}</p>
                     <p>Description: {event.eventdescription}</p>
-                    <img src={`https://datespot-production.up.railway.app/photos/${event.eventphoto}`} alt={event.alttext || 'Event photo'} />
+                    <img src={`${event.eventphoto}`} alt={event.alttext || 'Event photo'} />
                     <div className="location-date">
                         <p>Date: {new Date(event.date).toLocaleDateString(undefined,
                             { year: 'numeric', month: 'long', day: 'numeric' })}</p>

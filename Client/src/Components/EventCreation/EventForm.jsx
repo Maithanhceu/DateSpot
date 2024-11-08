@@ -40,7 +40,7 @@ function EventForm() {
         uploadData.append('file', file);
 
         try {
-            const response = await fetch('https://datespot-production.up.railway.app/uploadPhoto', {
+            const response = await fetch(`${import.meta.env.VITE_url}/uploadPhoto`, {
                 method: 'POST',
                 body: uploadData,
             });
@@ -73,7 +73,7 @@ function EventForm() {
         };
 
         try {
-            const response = await fetch(`https://datespot-production.up.railway.app/editEvents/${eventId}`, {
+            const response = await fetch(`http://localhost:1113/editEvents/${eventId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

@@ -14,10 +14,10 @@ function FetchAltText({ eventId }) {
     }, []);
     
     //function to fetch altText from GPT 
-    // let number = eventId;
+    let number = eventId;
     const fetchAltText = async () => {
         try {
-            const response = await fetch(`https://datespot-production.up.railway.app/userEventsTable/altText/${number}`);
+            const response = await fetch(`${import.meta.env.VITE_URL}/${number}`);
             if (!response.ok) {
                 throw new Error(`Error: ${response.statusText}`);
             }

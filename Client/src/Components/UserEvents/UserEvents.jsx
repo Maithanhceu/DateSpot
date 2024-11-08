@@ -19,7 +19,7 @@ function UserEvents() {
     useEffect(() => {
         const fetchUserEvents = async () => {
             try {
-                const response = await fetch('https://datespot-production.up.railway.app/events');
+                const response = await fetch(`${import.meta.env.VITE_URL}/events`);
                 const result = await response.json();
                 setData(result);
             } catch (error) {
@@ -33,7 +33,7 @@ function UserEvents() {
     // Register an event
     const registerEvent = async (eventId) => {
         try {
-            const response = await fetch('https://datespot-production.up.railway.app/register', {
+            const response = await fetch(`${import.meta.env.VITE_URL}/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId, eventId })
@@ -88,7 +88,7 @@ function UserEvents() {
                         <p>Location: {event.location}</p>
                         <p>Description: {event.eventdescription}</p>
                         <img
-                            src={`https://datespot-production.up.railway.app/photos/${event.eventphoto}`}
+                            src={`${event.eventphoto}`}
                             alt={event.eventalttext}
                         />
                         <p>Event Type: {event.eventtype}</p>

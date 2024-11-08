@@ -9,7 +9,7 @@ import axios from 'axios';
 import fs from 'fs';
 import multer from 'multer';
 import path from 'path';
-import {OpenAI} from 'openai';
+import OpenAI from 'openai';
 import { ImageAnnotatorClient } from '@google-cloud/vision';
 
 const { Pool } = pkg;
@@ -20,12 +20,20 @@ app.use(express.json());
 app.use(cors());
 
 const pool = new Pool({
-    user: process.env.DB_USER,        
-    host: process.env.DB_HOST,        
-    database: process.env.DB_NAME,    
-    password: process.env.DB_PASSWORD, 
-    port: process.env.DB_PORT || 5432, 
+    user: 'thanhmai',
+    host: 'localhost',
+    database: 'date_spot',
+    port: 5432,
 });
+
+const s3Client = new S3Client({
+    region: process.env.AWS_REGION,
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    }
+});
+
 // -------------------------------------------------------------------------------------------------
 //OPEN AI end-point 
 const openai = new OpenAI({
@@ -72,11 +80,8 @@ app.get('/altText/:eventId', async (request, response) => {
 });
 
 // -------------------------------------------------------------------------------------------------
-// A POST Request to Google Vision 
-
-// Multer storage configuration
 const upload = multer({
-    dest: 'uploads/',
+    storage: multer.memoryStorage(),  // Store file directly in memory
 });
 
 const __filename = fileURLToPath(import.meta.url);
@@ -87,7 +92,6 @@ const visionClient = new ImageAnnotatorClient({
     keyFilename: path.join(__dirname, 'autopopulate.json'),
 });
 
-// POST route for uploading photo
 app.post('/uploadPhoto', upload.single('file'), async (request, response) => {
     const file = request.file;
     const fileName = `${Date.now()}-${file.originalname}`;
@@ -118,6 +122,7 @@ app.post('/uploadPhoto', upload.single('file'), async (request, response) => {
     }
 
     try {
+        // Upload the file directly to S3
         const uploadParams = {
             Bucket: process.env.AWS_S3_BUCKET_NAME,
             Key: `uploads/${fileName}`,
@@ -125,17 +130,16 @@ app.post('/uploadPhoto', upload.single('file'), async (request, response) => {
             ContentType: contentType,
         };
 
-        // Upload the file directly to S3
         const command = new PutObjectCommand(uploadParams);
         const s3Response = await s3Client.send(command);
         console.log('File uploaded to S3 successfully:', s3Response);
 
         // Analyze the uploaded image with Google Vision
         const [visionResult] = await visionClient.labelDetection(file.buffer);
-        const labels = visionResult.labelAnnotations;
+        const labels = visionResult.labelAnnotations || [];
 
         // If labels are detected, process them
-        const labelsDescriptions = labels && labels.length > 0 
+        const labelsDescriptions = labels.length > 0 
             ? labels.map(label => label.description).join(', ')
             : '';
 
@@ -146,7 +150,6 @@ app.post('/uploadPhoto', upload.single('file'), async (request, response) => {
             [fileUrl, labelsDescriptions]
         );
 
-        // Return the created event
         return response.status(201).json(eventResult.rows[0]);
     } catch (error) {
         console.error('Error processing upload:', error);
@@ -273,6 +276,28 @@ app.get('/events', async (request, response) => {
     }
 });
 
+app.put('/editEvents/:userId/:eventId', async (request, response) => {
+    const userId = request.params.userId;
+    const eventId = request.params.eventId;
+    const { date, location, eventType, eventDescription, eventTitle, eventPhoto, eventGroup } = request.body;
+
+    try {
+        const result = await pool.query(
+            'UPDATE events SET date = $1, location = $2, eventType = $3, eventDescription = $4, eventTitle = $5, eventPhoto = $6, eventGroup =$7 WHERE eventId = $8 AND userId = $9 RETURNING *',
+            [date, location, eventType, eventDescription, eventTitle, eventPhoto, eventGroup, eventId, userId]
+        );
+
+        if (result.rowCount === 0) {
+            return response.status(404).json({ error: 'Event not found or you do not have permission to edit this event.' });
+        }
+
+        response.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error executing query', error);
+        response.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 app.delete('/deleteEvent/:userId/:eventId', async (request, response) => {
     const { userId, eventId } = request.params;
 
@@ -295,6 +320,8 @@ app.delete('/deleteEvent/:userId/:eventId', async (request, response) => {
     }
 });
 
+
+
 // -------------------------------------------------------------------------------------------------
 //User Events Table 
 app.get('/userEventsTable/:userId', async (request, response) => {
@@ -308,6 +335,7 @@ app.get('/userEventsTable/:userId', async (request, response) => {
         response.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 app.post('/register', async (request, response) => {
     const { userId, eventId } = request.body;
@@ -363,6 +391,7 @@ app.post('/register', async (request, response) => {
     }
 });
 
+
 app.delete('/deleteUserEvent/:userId/:eventId', async (request, response) => {
     const { userId, eventId } = request.params;
 
@@ -384,10 +413,6 @@ app.delete('/deleteUserEvent/:userId/:eventId', async (request, response) => {
     }
 });
 
-if (process.env.NODE_ENV !== 'test') {
-    // Only start the server if not in test environment
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-    });
-}
-module.exports = app; // Ensure the app is exported for testing purposes
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});

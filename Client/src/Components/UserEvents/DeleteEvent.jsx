@@ -5,7 +5,7 @@ function DeleteEvent({ userId, eventId, eventUserId }) {
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(`https://datespot-production.up.railway.app/deleteEvent/${eventUserId}/${eventId}`, {
+            const response = await fetch(`${import.meta.env.VITE_URL}/${eventUserId}/${eventId}`, {
                 method: 'DELETE',
             });
             
