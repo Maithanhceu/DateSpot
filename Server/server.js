@@ -9,7 +9,7 @@ import axios from 'axios';
 import fs from 'fs';
 import multer from 'multer';
 import path from 'path';
-import OpenAI from 'openai';
+import {OpenAI} from 'openai';
 import { ImageAnnotatorClient } from '@google-cloud/vision';
 
 const { Pool } = pkg;
@@ -20,20 +20,12 @@ app.use(express.json());
 app.use(cors());
 
 const pool = new Pool({
-    user: 'thanhmai',
-    host: 'localhost',
-    database: 'date_spot',
-    port: 5432,
+    user: process.env.DB_USER,        
+    host: process.env.DB_HOST,        
+    database: process.env.DB_NAME,    
+    password: process.env.DB_PASSWORD, 
+    port: process.env.DB_PORT || 5432, 
 });
-
-const s3Client = new S3Client({
-    region: process.env.AWS_REGION,
-    credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    }
-});
-
 // -------------------------------------------------------------------------------------------------
 //OPEN AI end-point 
 const openai = new OpenAI({
@@ -281,28 +273,6 @@ app.get('/events', async (request, response) => {
     }
 });
 
-app.put('/editEvents/:userId/:eventId', async (request, response) => {
-    const userId = request.params.userId;
-    const eventId = request.params.eventId;
-    const { date, location, eventType, eventDescription, eventTitle, eventPhoto, eventGroup } = request.body;
-
-    try {
-        const result = await pool.query(
-            'UPDATE events SET date = $1, location = $2, eventType = $3, eventDescription = $4, eventTitle = $5, eventPhoto = $6, eventGroup =$7 WHERE eventId = $8 AND userId = $9 RETURNING *',
-            [date, location, eventType, eventDescription, eventTitle, eventPhoto, eventGroup, eventId, userId]
-        );
-
-        if (result.rowCount === 0) {
-            return response.status(404).json({ error: 'Event not found or you do not have permission to edit this event.' });
-        }
-
-        response.status(200).json(result.rows[0]);
-    } catch (error) {
-        console.error('Error executing query', error);
-        response.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
 app.delete('/deleteEvent/:userId/:eventId', async (request, response) => {
     const { userId, eventId } = request.params;
 
@@ -325,8 +295,6 @@ app.delete('/deleteEvent/:userId/:eventId', async (request, response) => {
     }
 });
 
-
-
 // -------------------------------------------------------------------------------------------------
 //User Events Table 
 app.get('/userEventsTable/:userId', async (request, response) => {
@@ -340,7 +308,6 @@ app.get('/userEventsTable/:userId', async (request, response) => {
         response.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
 
 app.post('/register', async (request, response) => {
     const { userId, eventId } = request.body;
@@ -396,7 +363,6 @@ app.post('/register', async (request, response) => {
     }
 });
 
-
 app.delete('/deleteUserEvent/:userId/:eventId', async (request, response) => {
     const { userId, eventId } = request.params;
 
@@ -418,6 +384,10 @@ app.delete('/deleteUserEvent/:userId/:eventId', async (request, response) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    // Only start the server if not in test environment
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}
+module.exports = app; // Ensure the app is exported for testing purposes

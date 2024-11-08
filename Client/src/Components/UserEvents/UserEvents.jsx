@@ -19,7 +19,7 @@ function UserEvents() {
     useEffect(() => {
         const fetchUserEvents = async () => {
             try {
-                const response = await fetch('/events');
+                const response = await fetch('https://datespot-production.up.railway.app/events');
                 const result = await response.json();
                 setData(result);
             } catch (error) {
@@ -33,7 +33,7 @@ function UserEvents() {
     // Register an event
     const registerEvent = async (eventId) => {
         try {
-            const response = await fetch('/register', {
+            const response = await fetch('https://datespot-production.up.railway.app/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId, eventId })
@@ -82,13 +82,13 @@ function UserEvents() {
             <div className="event-container">
                 {filteredData.map((event) => (
                     <div key={event.eventid} className="event-item">
-                       <p><bold>{event.eventtitle}</bold></p>
+                       <p><strong>{event.eventtitle}</strong></p>
                         <p>Date: {new Date(event.date).toLocaleDateString(undefined,
                             { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                         <p>Location: {event.location}</p>
                         <p>Description: {event.eventdescription}</p>
                         <img
-                            src={`${event.eventphoto}`}
+                            src={`https://datespot-production.up.railway.app/photos/${event.eventphoto}`}
                             alt={event.eventalttext}
                         />
                         <p>Event Type: {event.eventtype}</p>
