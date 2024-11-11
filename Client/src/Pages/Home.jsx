@@ -1,9 +1,22 @@
-import NewsAPI from "../Components/NewsAPI";
+import { AltTextProvider} from '../Components/EventCreation/AltTextContext';
+import NewsAPI from '../Components/NewsAPI';
+import EventForm from '../Components/EventCreation/EventForm';
+import './CSS/Home.css'
+
+
+
 
 export default function Home() {
     return (
         <>
-        <p> Home Page </p>
-        <NewsAPI /></>
+            <AltTextProvider>
+                <div className='row-container'>
+                <NewsAPI/>
+                <EventForm/>
+                </div>
+            </AltTextProvider>
+
+        </>
+
     );
 }

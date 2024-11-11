@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import './CSS/NewsAPI.css'
+
 
 function NewsAPI() {
     const [newsData, setNewData] = useState({});
@@ -6,7 +8,8 @@ function NewsAPI() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('/news/romance');
+              const URL = import.meta.env.VITE_URL
+                const response = await fetch(`${URL}/news/romance`);
                 const result = await response.json();
                 setNewData(result);
             } catch (error) {
@@ -17,11 +20,27 @@ function NewsAPI() {
     }, []);
     
     return (
-        <div>
-            <h1>NewsAPI</h1>
-            {newsData ? (
+
+        <div className='news-api-container'>
+            <h2>News Articles</h2>
+            {newsData.length > 0 ? (
                 <div>
-                    {JSON.stringify(newsData, null, 2)}
+                    {newsData.map((article, index) => (
+                        <div key={index} className="article-container">
+                            {article.urlToImage && (
+                                <img 
+                                    src={article.urlToImage} 
+                                    alt={article.title} 
+                                    className="article-image" 
+                                />
+                            )}
+                            <p>Author: {article.author}</p>
+                            <p>
+                                Title: <a href={article.url} target="_blank" rel="noopener noreferrer">{article.title}</a>
+                            </p>
+                            <p>Description: {article.description}</p>
+                        </div>
+                    ))}
                 </div>
             ) : (
                 <div>Error fetching news data</div>
@@ -29,4 +48,5 @@ function NewsAPI() {
         </div>
     );
 }
+
 export default NewsAPI;
