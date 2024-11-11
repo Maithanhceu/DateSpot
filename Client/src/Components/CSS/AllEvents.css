@@ -1,0 +1,25 @@
+.event {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start; 
+    margin: 20px 0; 
+    padding: 20px;
+    background-color: #fff; 
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.event img {
+    width: auto; 
+    max-width: 300px;
+    height: auto; 
+    border-radius: 5px; 
+    margin-right: 20px; 
+}
+
+.location-date{
+    display: flex;
+    flex-direction: row;
+    gap:1rem;
+}

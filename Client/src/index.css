@@ -1,0 +1,49 @@
+:root {
+  --hanken-grotesk-weight: normal;
+}
+
+.hanken-grotesk {
+  font-family: "Hanken Grotesk", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: var(--hanken-grotesk-weight);
+  font-style: normal;
+}
+
+h1, h2 {
+  font-family:'Neue Machina';
+  font-weight: bold;
+  font-size: 2rem;
+  color: aliceblue;
+}
+
+button {
+  background-color: #320a47;
+  justify-content: center;
+  color: white;
+  border: none;
+  width: auto;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #3f6a91;
+}
+
+@font-face {
+  font-family: 'Neue Machina';
+  src: url('./Components/CSS/Font/NeueMachina-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Neue Machina';
+  src: url('./Components/CSS/Font/NeueMachina-Ultrabold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
