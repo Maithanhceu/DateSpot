@@ -1,6 +1,6 @@
 # Date Spot
 1. Project Overview
-- **Date Spot **is a dating platform/application inspired by conversations between** Mia and Mai**, two single friends navigating the challenges of finding emotionally available partners in the fast-paced environment of Brooklyn. After experiencing emotional burnout from the typical online dating experience, they came up with the idea for date spot. Their goal is to create a solution that addresses the prevalent issues in modern dating culture, including overwhelming choices, catfishing, ghosting, and more.
+- **Date Spot **is a dating platform/application inspired by conversations between** Mia and Mai**, two single friends navigating the challenges of finding emotionally available partners in the fast-paced environment of Brooklyn. *Date Spot* is like the Eventbrite for dating. 
 
 Please find the link to my project timeline here: [Link to my Trello](https://trello.com/b/rTnpw6dE/datespot)
 
@@ -87,9 +87,9 @@ cd ../client npm run dev
 
 # Acknowledgments
 
-I would like to express my gratitude to everyone who supported and inspired us in the creation of **Date Spot**.
+I would like to express my gratitude to everyone who supported me throughout the process of creating**Date Spot**.
 
-- **Our Mentors and Reviewers**: For their guidance, insights, and encouragement throughout the development of this project. Shoutout to @abbiehuynh, @mx-ruthie, @themagicianking, and @MBHunter88 
+- **My Mentors and Reviewers**: For their guidance, insights, and encouragement throughout the development of this project. Shoutout to @abbiehuynh, @mx-ruthie, @themagicianking, and @MBHunter88 
 
 - **Friends and Family**: For being our biggest supporters. 
 
