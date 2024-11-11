@@ -25,8 +25,11 @@ And you can see my entire proposal here: [Link to my proposal](https://docs.goog
 ![Vitest](https://img.shields.io/badge/-Vitest-6C63FF?style=flat&logo=vitest&logoColor=white)
 ![HTML5](https://img.shields.io/badge/-HTML5-E34F26?style=flat&logo=HTML5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/-CSS3-1572B6?style=flat&logo=CSS3&logoColor=white)
+![Auth0](https://img.shields.io/badge/-Auth0-EB5424?style=flat&logo=auth0&logoColor=white)
+![AWS](https://img.shields.io/badge/-AWS-232F3E?style=flat&logo=amazon-aws&logoColor=white)
 
-- **AI Technolog including GPT and Google Vision for a feature that helps with generating an alt-text everytime an image is uploaded**: 
+
+- **AI Technology including GPT and Google Vision for a feature that helps with generating an alt-text everytime an image is uploaded**: 
 
 # To install and run this locally, follow these steps:
 
@@ -40,10 +43,38 @@ First, clone the repository to your local machine using the following command:
 Navigate to the project directory and install the required dependencies, then start the development server using the following commands:
 
 `npm install`
+
+## Set up environment variables:
+
+# Create a .env file in the root directory and add the following values:
+
+```bash
+DATABASE_URI=your_postgres_database_url 
+OPENAI_API_KEY=your_openai_api_key 
+PORT="yourport"  
+NewsAPI_Key=your_secret_key_here
+AWS_Key=your_AWS_KEY
+Google_Vision_Key=your_Google_Vision
+```
+## Create a .env file in the client directory: 
+``` bash 
+VITE_AUTH0_DOMAIN="insert here"
+VITE_CLIENT_ID="insert here"
+VITE_URL="insert here" 
+```
+
+# Start the backend server:
+
+cd server `npm start`
+
+# Start the development server:
+
+cd ../client npm run dev
+
 `npm run dev`
 
-# Open the  in the browser and you should see the following blog page: 
-<img width="1428" alt="Event_Page" src="https://github.com/user-attachments/assets/d79400c1-0af4-4d37-aa67-eb86921e422c">
+# Open the  in the browser and you should see the following site : 
+
 
 2. Stretch Goals
  
@@ -53,3 +84,16 @@ Navigate to the project directory and install the required dependencies, then st
  
 **Version 3.0**
 - Twilio (with a free tier): You can send SMS notifications or reminders to users about upcoming events. The free tier includes some credits to get started
+
+# Acknowledgments
+
+I would like to express my gratitude to everyone who supported and inspired us in the creation of **Date Spot**.
+
+- **Our Mentors and Reviewers**: For their guidance, insights, and encouragement throughout the development of this project. Shoutout to @abbiehuynh, @mx-ruthie, @themagicianking, and @MBHunter88 
+
+- **Friends and Family**: For being our biggest supporters. 
+
+Thank you all for being a part of this journey. I couldn’t have done it without you! 
+
+# Contact:
+**Feel free to explore my projects and contact me! You can contact me @[Mai's LinkedIn Profile](https://www.linkedin.com/in/mai-th2024/)**
