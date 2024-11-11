@@ -75,10 +75,6 @@ cd ../client npm run dev
 
 # Open the  in the browser and you should see the following site : 
  ![GIF](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbDRrcXAwbnQ1dG1yZXo3cDd1MmMyNWFzd2Y2bjI1ajBmMHA4bzZ5ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/J6mjEdz4fNYbVq8N5L/giphy.gif)
-
-
-
-2. Stretch Goals
  
 **Version 2.0**
 - A full and comprehensive place where users can ask questions
