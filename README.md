@@ -46,7 +46,7 @@ Navigate to the project directory and install the required dependencies, then st
 
 ## Set up environment variables:
 
-# Create a .env file in the root directory and add the following values:
+## Create a .env file in the root directory and add the following values:
 
 ```bash
 DATABASE_URI=your_postgres_database_url 
