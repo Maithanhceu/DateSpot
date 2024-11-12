@@ -31,7 +31,7 @@ And you can see my entire proposal here: [Link to my proposal](https://docs.goog
 
 - **AI Technology including GPT and Google Vision for a feature that helps with generating an alt-text everytime an image is uploaded**: 
 
-# To install and run this locally, follow these steps:
+# To install and run this locally, follow these steps
 
 # Clone the Repository: 
 First, clone the repository to your local machine using the following command: 
