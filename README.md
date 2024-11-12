@@ -85,7 +85,7 @@ cd ../client npm run dev
 
 # Acknowledgments
 
-I would like to express my gratitude to everyone who supported me throughout the process of creating**Date Spot**.
+I would like to express my gratitude to everyone who supported me throughout the process of creating **Date Spot**.
 
 - **My Mentors and Reviewers**: For their guidance, insights, and encouragement throughout the development of this project. Shoutout to @abbiehuynh, @mx-ruthie, @themagicianking, and @MBHunter88 
 
